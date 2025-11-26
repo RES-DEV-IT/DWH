@@ -12,4 +12,4 @@ services:
       - "5431:5432"
     
 volumes:
-  resdb_volume
+  resdb_volume:
