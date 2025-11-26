@@ -6,11 +6,10 @@ services:
       POSTGRES_PASSWORD: resdb
       POSTGRES_DB: resdb
     volumes:
-      - resdb_volume
+      - resdb_volume:/var/lib/postgresql/data
     restart: always
     ports:
       - "5431:5432"
     
 volumes:
   resdb_volume
-  
