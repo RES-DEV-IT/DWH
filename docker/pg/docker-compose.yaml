@@ -1,0 +1,16 @@
+services:
+  pg_res:
+    image: postgres:13
+    environment:
+      POSTGRES_USER: resdb
+      POSTGRES_PASSWORD: resdb
+      POSTGRES_DB: resdb
+    volumes:
+      - resdb_volume
+    restart: always
+    ports:
+      - "5431:5432"
+    
+volumes:
+  resdb_volume
+  
