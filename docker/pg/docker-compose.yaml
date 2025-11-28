@@ -1,6 +1,6 @@
 services:
   pg_res:
-    image: postgres:13
+    image: postgres:12.6
     environment:
       POSTGRES_USER: resdb
       POSTGRES_PASSWORD: resdb

@@ -32,8 +32,8 @@ def download_and_insert():
     
     stage_transformer = StageTransformer()
 
-    values_dfs_to_insert = []
-    colors_dfs_to_insert = []
+    values_to_insert = []
+    colors_to_insert = []
     for sheet_name in sp.project_sheets:
         print(sheet_name)
         c = sp.project_sheets[sheet_name]["columns"] # pg format
@@ -44,32 +44,53 @@ def download_and_insert():
         values_df = pd.DataFrame(v, columns=c)
         values_df = stage_transformer.kks(values_df)
         values_df = stage_transformer.row_number(values_df)
-        values_df = stage_transformer.created_at(values_df, _created_at)
-        values_dfs_to_insert.append(values_df)
+        values_to_insert.append((
+            _created_at,
+            values_df.to_json(orient='records', date_format='iso')
+        ))
 
         # Работаем с цветами
         colors_df = pd.DataFrame(b, columns=c)
         colors_df = stage_transformer.row_number(colors_df)
-        colors_df = stage_transformer.created_at(colors_df, _created_at)
-        colors_dfs_to_insert.append(colors_df)
-    
-    values_df = pd.concat(values_dfs_to_insert)
-    colors_df = pd.concat(colors_dfs_to_insert)
+        colors_to_insert.append((
+            _created_at,
+            colors_df.to_json(orient='records', date_format='iso')
+        ))
     
     # Загружаем данные в PG
     hook = PostgresHook(postgres_conn_id="resdb_connection")
     
-    hook.insert_rows(
-        table="stage_dembla_values",
-        rows=[tuple(x) for x in values_df.to_records(index=False)],
-        columns=list(values_df.columns)
-    )
+    conn = hook.get_conn()
+    cursor = conn.cursor()
+        
+    # SQL запрос для вставки
+    values_query = f"""
+    INSERT INTO test (_created_at, content)
+    VALUES (%s, %s)
+    """
+    colors_query = f"""
+    INSERT INTO test (_created_at, content)
+    VALUES (%s, %s)
+    """
+    
+    # Массовая вставка
+    cursor.executemany(values_query, values_to_insert)
+    cursor.executemany(colors_query, colors_to_insert)
+    conn.commit()
+    cursor.close()
+    conn.close()
 
-    hook.insert_rows(
-        table="stage_dembla_colors",
-        rows=[tuple(x) for x in colors_df.to_records(index=False)],
-        columns=list(colors_df.columns)
-    )
+    # hook.insert_rows(
+    #     table="stage_dembla_values",
+    #     rows=[tuple(x) for x in values_df.to_records(index=False)],
+    #     columns=list(values_df.columns)
+    # )
+
+    # hook.insert_rows(
+    #     table="stage_dembla_colors",
+    #     rows=[tuple(x) for x in colors_df.to_records(index=False)],
+    #     columns=list(colors_df.columns)
+    # )
 
     shutil.rmtree("tmp")
 

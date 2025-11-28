@@ -63,9 +63,8 @@ def parse(sheet, theme_colors, colors, existing_components):
 
     pg_columns_names = []
     for column_name in columns_names:
-        column_name = column_name.lower().replace("/", "")
-        column_name = ' '.join(column_name.split())
-        column_name = column_name.replace(" ", "_")
+        column_name = column_name.lower().replace("/", "").replace(".", "")
+        column_name = '_'.join(column_name.split())
         pg_columns_names.append(column_name)
     
     columns = pg_columns_names
