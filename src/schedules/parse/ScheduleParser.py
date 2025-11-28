@@ -1,7 +1,7 @@
 import yaml
 import re
 from schedules.parse.utils import parse
-from typing import List
+from typing import List, Tuple
 from xml.etree import ElementTree as ET
 
 
@@ -70,7 +70,7 @@ class ScheduleParser:
         return re.match(r'^P\d+.*', sheet_name)
 
 
-    def get_typed_values_by_sheet_name(self, sheet_name: str, columns_and_types: List[tuple[str, str, str|None]], db_columns):
+    def get_typed_values_by_sheet_name(self, sheet_name: str, columns_and_types: List[Tuple[str, str, str]], db_columns):
         print("get typed values", sheet_name)
         assert sheet_name in self.project_sheets, f"{sheet_name} not in self.project_sheets"
 
