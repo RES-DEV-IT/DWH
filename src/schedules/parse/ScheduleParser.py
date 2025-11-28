@@ -1,6 +1,6 @@
 import yaml
 import re
-from .utils import parse
+from schedules.parse.utils import parse
 from typing import List
 from xml.etree import ElementTree as ET
 

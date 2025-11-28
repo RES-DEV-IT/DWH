@@ -1,4 +1,4 @@
-from .KKSTransformer import KKSTransformer
+from schedules.stage_transform.KKSTransformer import KKSTransformer
 import pandas as pd
 
 
