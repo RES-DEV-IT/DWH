@@ -59,8 +59,15 @@ def parse(sheet, theme_colors, colors, existing_components):
 
     values = raw_values[pono_idx+head_size:, columns_idxs]
     background_colors = raw_background_colors[pono_idx+head_size:, columns_idxs]
+
+    pg_columns_names = []
+    for column_name in columns_names:
+        column_name = column_name.lower().replace("/", "")
+        column_name = ' '.join(column_name.split())
+        column_name = column_name.replace(" ", "_")
+        pg_columns_names.append(column_name)
     
-    columns = columns_names
+    columns = pg_columns_names
     values = values
     background = background_colors
     
