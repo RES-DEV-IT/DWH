@@ -21,7 +21,7 @@ class DownloadSchedule:
 
     def download_by_manuf_name(self, manuf_name: str):
         assert type(manuf_name) is str, "Manufacturer name should be in string format"
-        assert manuf_name in self.__config["URLS"], f"Manufacturer name not in available names ({self.__config["URLS"].keys})"
+        assert manuf_name in self.__config["URLS"], f"Manufacturer name not in available names ({self.__config['URLS'].keys})"
         
         try:
             url = self.__config["URLS"][manuf_name]
