@@ -1,5 +1,7 @@
 import numpy as np
 import pandas as pd
+from typing import Tuple
+
 
 def parse(sheet, theme_colors, colors, existing_components):
     print("ProjectSheet parsing", sheet.title)
@@ -76,7 +78,7 @@ def parse(sheet, theme_colors, colors, existing_components):
     assert len(values) == len(background)
     return columns, values, background
 
-def get_last_row_and_last_column(sheet) -> tuple[int, int]:
+def get_last_row_and_last_column(sheet) -> Tuple[int, int]:
         last_row = 0
         last_column = 0
         for row in sheet.iter_rows():
@@ -87,7 +89,7 @@ def get_last_row_and_last_column(sheet) -> tuple[int, int]:
 
         return last_row, last_column
 
-def get_cell_bg(cell, theme_colors) -> tuple[int, int, int]:
+def get_cell_bg(cell, theme_colors) -> Tuple[int, int, int]:
     if cell.value == "NA": # Если в ячейке NA, то возвращаем серый цвет (#999999)
         return '(153, 153, 153)'
     if cell.fill is None:
