@@ -1,6 +1,6 @@
-from src.schedules.download.DownloadSchedule import DownloadSchedule
-from src.schedules.parse.ScheduleParser import ScheduleParser
-from src.schedules.stage_transform.StageTransformer import StageTransformer
+from schedules.download.DownloadSchedule import DownloadSchedule
+from schedules.parse.ScheduleParser import ScheduleParser
+from schedules.stage_transform.StageTransformer import StageTransformer
 from datetime import datetime, timedelta
 from airflow.decorators import task
 from airflow.providers.postgres.hooks.postgres import PostgresHook
