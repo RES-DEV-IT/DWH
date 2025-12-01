@@ -1,0 +1,10 @@
+[0m16:33:48.575005 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'start', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x104e51460>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x106157970>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x106188520>]}
+
+
+============================== 16:33:48.577548 | 0d9d1a59-e2d1-4c34-aa2e-d84d2fc12f97 ==============================
+[0m16:33:48.577548 [info ] [MainThread]: Running with dbt=1.5.0
+[0m16:33:48.577893 [debug] [MainThread]: running dbt with arguments {'static_parser': 'True', 'log_path': 'logs', 'cache_selected_only': 'False', 'use_experimental_parser': 'False', 'send_anonymous_usage_stats': 'True', 'log_format': 'default', 'debug': 'False', 'use_colors': 'True', 'profiles_dir': '/Users/artem/.dbt', 'log_cache_events': 'False', 'warn_error_options': 'WarnErrorOptions(include=[], exclude=[])', 'quiet': 'False', 'warn_error': 'None', 'write_json': 'True', 'version_check': 'True', 'fail_fast': 'False', 'introspect': 'True', 'indirect_selection': 'eager', 'no_print': 'None', 'printer_width': '80', 'target_path': 'None', 'partial_parse': 'True'}
+[0m16:33:57.530818 [debug] [MainThread]: Starter project path: /Users/artem/Desktop/Artem/Work/RES/DWH/dbt_venv_39/lib/python3.9/site-packages/dbt/include/starter_project
+[0m16:34:09.574822 [debug] [MainThread]: Command `dbt init` succeeded at 16:34:09.573831 after 21.02 seconds
+[0m16:34:09.576853 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'end', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x104e51460>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x1061b3340>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x1061b3310>]}
+[0m16:34:09.578220 [debug] [MainThread]: Flushing usage events
