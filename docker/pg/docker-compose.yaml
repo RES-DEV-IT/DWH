@@ -9,7 +9,13 @@ services:
       - resdb_volume:/var/lib/postgresql/data
     restart: always
     ports:
-      - "5431:5432"
-    
+      - "3334:5432"
+    networks:
+      - airflow_pg_net
+      
 volumes:
   resdb_volume:
+
+networks:
+  airflow_pg_net:
+    external: true

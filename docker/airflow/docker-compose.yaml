@@ -72,6 +72,8 @@ services:
       interval: 5s
       retries: 5
     restart: always
+    networks:
+      - airflow_pg_net
 
   airflow-webserver:
     <<: *airflow-common
@@ -84,11 +86,15 @@ services:
       timeout: 10s
       retries: 5
     restart: always
+    networks:
+      - airflow_pg_net
 
   airflow-scheduler:
     <<: *airflow-common
     command: scheduler
     restart: always
+    networks:
+      - airflow_pg_net
 
   airflow-init:
     <<: *airflow-common
@@ -99,6 +105,12 @@ services:
       _AIRFLOW_WWW_USER_CREATE: 'true'
       _AIRFLOW_WWW_USER_USERNAME: ${_AIRFLOW_WWW_USER_USERNAME:-airflow}
       _AIRFLOW_WWW_USER_PASSWORD: ${_AIRFLOW_WWW_USER_PASSWORD:-airflow}
+    networks:
+      - airflow_pg_net
 
 volumes:
   postgres-db-volume:
+
+networks:
+  airflow_pg_net:
+    external: true

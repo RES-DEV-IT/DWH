@@ -46,6 +46,8 @@ def download_and_insert():
         values_df = stage_transformer.row_number(values_df)
         values_to_insert.append((
             _created_at,
+            MANUF_NAME,
+            sheet_name,
             values_df.to_json(orient='records', date_format='iso')
         ))
 
@@ -54,6 +56,8 @@ def download_and_insert():
         colors_df = stage_transformer.row_number(colors_df)
         colors_to_insert.append((
             _created_at,
+            MANUF_NAME,
+            sheet_name, 
             colors_df.to_json(orient='records', date_format='iso')
         ))
     
@@ -65,12 +69,12 @@ def download_and_insert():
         
     # SQL запрос для вставки
     values_query = f"""
-    INSERT INTO test (_created_at, content)
-    VALUES (%s, %s)
+    INSERT INTO stage.schedules_values (_created_at, _manuf, _sheet_name, content)
+    VALUES (%s, %s, %s, %s)
     """
     colors_query = f"""
-    INSERT INTO test (_created_at, content)
-    VALUES (%s, %s)
+    INSERT INTO stage.schedules_colors (_created_at, _manuf, _sheet_name, content)
+    VALUES (%s, %s, %s, %s)
     """
     
     # Массовая вставка
@@ -79,18 +83,6 @@ def download_and_insert():
     conn.commit()
     cursor.close()
     conn.close()
-
-    # hook.insert_rows(
-    #     table="stage_dembla_values",
-    #     rows=[tuple(x) for x in values_df.to_records(index=False)],
-    #     columns=list(values_df.columns)
-    # )
-
-    # hook.insert_rows(
-    #     table="stage_dembla_colors",
-    #     rows=[tuple(x) for x in colors_df.to_records(index=False)],
-    #     columns=list(colors_df.columns)
-    # )
 
     shutil.rmtree("tmp")
 
