@@ -10,8 +10,8 @@ import pandas as pd
 import shutil
 
 
-MANUF_NAME = "Dembla"
-CRON_EXP = "3 6-15/2 * * mon-fri"
+MANUF_NAME = "DelVal"
+CRON_EXP = "0 6-15/2 * * mon-fri"
 START_DATE = datetime(2025, 11, 27, 4, 0, 0, 0)
 
 default_args = {

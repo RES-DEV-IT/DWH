@@ -23,7 +23,7 @@ with DAG(
     
     dbt_run = BashOperator(
         task_id="dbt_run",
-        bash_operator="cd dbt_project && dbt run -m my_first_dbt_model",
+        bash_command="cd dbt_project && dbt run -m my_first_dbt_model",
         env={
             "DBT_PROFILES_DIR": "dbt_project"
         }

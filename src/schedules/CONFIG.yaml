@@ -1,14 +1,14 @@
 URLS: # links to schedules 
+  "DelVal": "https://docs.google.com/spreadsheets/d/1p_TaLcSPFhKI6RB45m7Wk4mpaVYp79O0IqQ9egaMPBM"
   "Dembla": "https://docs.google.com/spreadsheets/d/1GgkuvbTPKm5yEJBPhVzhqgzCryTou3X4v35ZgTKPkcw"
-  #"DelVal": "https://docs.google.com/spreadsheets/d/1p_TaLcSPFhKI6RB45m7Wk4mpaVYp79O0IqQ9egaMPBM"
-  "DelVal": "https://docs.google.com/spreadsheets/d/1HZC94Tx_Xxv8wR3mUk_cNdTgoearXL6kOxsgmk0uZNM"
+  "EHO": "https://docs.google.com/spreadsheets/d/1Zu-ISFlPk4pvb0jvvUXjhkw0uXWsYWmxmkqFWOxMVHU"
   "HawaTubes": "https://docs.google.com/spreadsheets/d/1PY4LKYVw_GoPSIW9b7fITQtX0ZdpmnrYj6Pe-KmCACQ"
   "LC": "https://docs.google.com/spreadsheets/d/1OgPGNrtFdSGnQAwGs2QuvS5CSQXWpOQqI8w5y9-L-sc"
-  "RKC": "https://docs.google.com/spreadsheets/d/1Tgol6dqz9bUhei1OHv5tSATsyW2q95c5HikWo5gipWw"
   "Nirmal": "https://docs.google.com/spreadsheets/d/12_89P4pS6nDN34o00hB7M2AQoDnUM-iGe6PtkPh0RPg"
+  "RKC": "https://docs.google.com/spreadsheets/d/1Tgol6dqz9bUhei1OHv5tSATsyW2q95c5HikWo5gipWw"
   "SDTork": "https://docs.google.com/spreadsheets/d/1fk9J8N7HuBVFnKv_rS8te_6dpya3bYkaOeWM9U_y70Y"
   "Jsons": "https://docs.google.com/spreadsheets/d/1jVV7I77F8PHOWcwqESKDktfQuDFhZdYOZJlk6vs85ac"
-  "EHO": "https://docs.google.com/spreadsheets/d/1Zu-ISFlPk4pvb0jvvUXjhkw0uXWsYWmxmkqFWOxMVHU"
+  
 
 SHORT_NAMES:
   "Dembla": "DL"

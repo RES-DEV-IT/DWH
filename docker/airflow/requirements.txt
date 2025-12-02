@@ -1,2 +1,4 @@
 gspread
 openpyxl
+dbt-core
+dbt-postgres
