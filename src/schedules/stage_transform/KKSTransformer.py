@@ -45,6 +45,7 @@ class KKSTransformer:
             return [kks]
         
         # Other variants
+        return [kks]
         if kks in ["prototype", "(prototype)", "NA", "-"]:
             return [kks]
         assert 1==0, f"DON'T match patterns {kks}" 
