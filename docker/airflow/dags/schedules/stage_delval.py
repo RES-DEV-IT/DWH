@@ -24,21 +24,17 @@ default_args = {
 def download_and_insert():
     _created_at = datetime.now()
 
-    ds = DownloadSchedule("tmp")
-    ds.download_by_manuf_name(manuf_name=MANUF_NAME)
-
-    workbook = load_workbook(f"tmp/{MANUF_NAME}.xlsx", data_only=True, read_only=True)
-    sp = ScheduleParser(workbook=workbook)
-    
+    ds = DownloadSchedule()
+    result = ds.download_by_manuf_name(manuf_name=MANUF_NAME)
     stage_transformer = StageTransformer()
 
     values_to_insert = []
     colors_to_insert = []
-    for sheet_name in sp.project_sheets:
+    for sheet_name in result:
         print(sheet_name)
-        c = sp.project_sheets[sheet_name]["columns"] # pg format
-        v = sp.project_sheets[sheet_name]["values"]
-        b = sp.project_sheets[sheet_name]["background"]
+        c = result[sheet_name]["columns"] # pg format
+        v = result[sheet_name]["values"]
+        b = result[sheet_name]["background"]
 
         # Работаем со значениями
         values_df = pd.DataFrame(v, columns=c)
@@ -83,8 +79,6 @@ def download_and_insert():
     conn.commit()
     cursor.close()
     conn.close()
-
-    shutil.rmtree("tmp")
 
 
 with DAG(
