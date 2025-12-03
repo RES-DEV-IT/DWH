@@ -7,7 +7,7 @@ class StageTransformer:
         self.kks_transformer = KKSTransformer()
 
     def kks(self, df: pd.DataFrame) -> pd.DataFrame:
-        df["KKS"] = self.kks_transformer(df["kks"].to_list())
+        df["kks"] = self.kks_transformer(df["kks"].to_list())
         return df
     
     def row_number(self, df: pd.DataFrame) -> pd.DataFrame:
