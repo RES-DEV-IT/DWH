@@ -21,6 +21,7 @@ class DownloadSchedule:
             self.__config = yaml.safe_load(stream)
 
     def is_project_sheet(self, sheet_name: str) -> bool:
+        """Является ли имя листа проектом"""
         return re.match(r'^P\d+.*', sheet_name)
 
     def download_by_manuf_name(self, manuf_name: str):
@@ -42,6 +43,8 @@ class DownloadSchedule:
         for sheet_name in visible_sheets:
             if self.is_project_sheet(sheet_name=sheet_name):
                 print(sheet_name)
+
+                # Получаем значения на листе
                 values_result = self.service.spreadsheets().values().get(
                     spreadsheetId=spreadsheet_id,
                     range=f"'{sheet_name}'"
@@ -73,10 +76,10 @@ class DownloadSchedule:
                 while values_result["values"][values_row_idx][0] == '':
                     values_row_idx += 1
 
-
+                # Получаем имена колонок (и индексы колонок, которые нужно выбросить)
                 ignore_col_idxs = []
                 columns = []
-                if values_row_idx != pono_row_idx: # Перед нами график с делением на компоненты
+                if values_row_idx == pono_row_idx + 2: # Перед нами график с делением на компоненты
                     current_component = None
                     for col_idx, col_name in enumerate(values_result["values"][pono_row_idx]):
                         if col_name in ["BODY", "DISC", "WNF", "END CONNECTOR", "BONNET", "CAGE", "FLANGE", "WEDGE", "SEAT", "COVER"]:
@@ -85,20 +88,25 @@ class DownloadSchedule:
                         elif col_name != '':
                             columns.append(col_name)
                         else:
-                            
                             if values_result["values"][pono_row_idx + 1][col_idx] != '':
                                 columns.append(current_component + ' ' + values_result["values"][pono_row_idx + 1][col_idx])
                             else:
                                 ignore_col_idxs.append(col_idx)
+                elif values_row_idx == pono_row_idx + 1: # Перед нами график без компонент (LC, RKC)
+                    for col_idx, col_name in enumerate(values_result["values"][pono_row_idx]):
+                        if col_name != '':
+                            columns.append(col_name)
+                        else:
+                            ignore_col_idxs.append(col_idx)
                 else:
-                    columns = values_result["values"][pono_row_idx]
-
+                    assert 1==2, f"Странное строение графика, проверь шапку в листе - {sheet_name}"
+                    
 
                 values = [['NULL'] * (max_row_len_values) for _ in range(len(values_result["values"]) - values_row_idx)]
                 bgs = [['NULL'] * (max_row_len_values) for _ in range(len(values_result["values"]) - values_row_idx)]
 
                 sheet_data = format_result["sheets"][0]["data"][0]
-                cell_data = []
+                
                 if 'rowData' in sheet_data:
                     for row_index, row in enumerate(sheet_data['rowData']):
                         if row and 'values' in row and row_index >= values_row_idx:
@@ -120,14 +128,7 @@ class DownloadSchedule:
                                     
                                     values[row_index - values_row_idx][col_index] = cell_value.replace("'", '')
                                     bgs[row_index - values_row_idx][col_index] = str(rgb_color)
-                                    cell_data.append({
-                                        'sheet_name': sheet_name,
-                                        'row': row_index + 1,
-                                        'column': col_index + 1,
-                                        'value': cell_value,
-                                        'rgb_color': rgb_color
-                                    })
-                                
+                                   
                 values = np.array(values)
                 values = np.delete(values, ignore_col_idxs, axis=1)
                 bgs = np.array(bgs)
