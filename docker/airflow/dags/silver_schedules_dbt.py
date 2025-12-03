@@ -7,7 +7,7 @@ from airflow import DAG
 
 CRON_EXP = None
 START_DATE = datetime(2025, 11, 27, 4, 0, 0, 0)
-DBT_MODEL_NAME = "stage_schedules"
+DBT_MODEL_NAME = "silver_schedules"
 
 default_args = {
     "owner": "Artem",
@@ -15,7 +15,7 @@ default_args = {
 }
 
 with DAG(
-    dag_id="stage_schedules",
+    dag_id="silver_schedules",
     default_args=default_args,
     start_date=START_DATE,
     schedule_interval=CRON_EXP,

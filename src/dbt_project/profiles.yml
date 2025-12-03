@@ -3,12 +3,12 @@ config:
   use_colors: True
   partial_parse: True
 
-dbt_postgres_intro:
+dbt_project:
   outputs:
     dev:
       type: postgres
       threads: 3
-      host: resdb
+      host: pg_res
       port: 5432
       user: resdb
       pass: resdb
