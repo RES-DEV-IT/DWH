@@ -7,7 +7,8 @@ from airflow import DAG
 
 CRON_EXP = None
 START_DATE = datetime(2025, 11, 27, 4, 0, 0, 0)
-DBT_MODEL_NAME = "silver_schedules"
+DBT_MODEL_NAME_VALUES = "silver_schedules_values"
+DBT_MODEL_NAME_COLORS = "silver_schedules_colors"
 
 default_args = {
     "owner": "Artem",
@@ -22,9 +23,18 @@ with DAG(
     catchup=False
 ) as dags:
     
-    dbt_run = BashOperator(
-        task_id="dbt_run",
-        bash_command=f"/home/airflow/.local/bin/dbt run -m {DBT_MODEL_NAME}",
+    dbt_run_values = BashOperator(
+        task_id="dbt_run_values",
+        bash_command=f"/home/airflow/.local/bin/dbt run -m {DBT_MODEL_NAME_VALUES}",
+        cwd='/opt/airflow/plugins/dbt_project',
+        env={
+            "DBT_PROFILES_DIR": "."
+        }
+    )
+
+    dbt_run_colors = BashOperator(
+        task_id="dbt_run_colors",
+        bash_command=f"/home/airflow/.local/bin/dbt run -m {DBT_MODEL_NAME_COLORS}",
         cwd='/opt/airflow/plugins/dbt_project',
         env={
             "DBT_PROFILES_DIR": "."
