@@ -80,8 +80,6 @@ def download_and_insert():
     cursor.close()
     conn.close()
 
-    shutil.rmtree("tmp")
-
 
 with DAG(
     dag_id=f"stage_{MANUF_NAME.lower()}",
