@@ -46,9 +46,9 @@ class KKSTransformer:
         
         # Other variants
         return [kks]
-        if kks in ["prototype", "(prototype)", "NA", "-"]:
-            return [kks]
-        assert 1==0, f"DON'T match patterns {kks}" 
+        # if kks in ["prototype", "(prototype)", "NA", "-"]:
+        #     return [kks]
+        # assert 1==0, f"DON'T match patterns {kks}" 
     
     def parse_pattern_1(self, kks):
         r = re.search(r'\(\d+(?:\s*,\s*\d+)*\)', kks)
