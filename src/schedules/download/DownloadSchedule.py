@@ -79,7 +79,7 @@ class DownloadSchedule:
                 if values_row_idx != pono_row_idx: # Перед нами график с делением на компоненты
                     current_component = None
                     for col_idx, col_name in enumerate(values_result["values"][pono_row_idx]):
-                        if col_name in ["BODY", "DISC", "WNF", "END CONNECTOR", "BONNET", "CAGE"]:
+                        if col_name in ["BODY", "DISC", "WNF", "END CONNECTOR", "BONNET", "CAGE", "FLANGE"]:
                             current_component = col_name
                             columns.append(current_component + ' ' + values_result["values"][pono_row_idx + 1][col_idx])
                         elif col_name != '':
