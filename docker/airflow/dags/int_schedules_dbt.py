@@ -7,8 +7,8 @@ from airflow import DAG
 
 CRON_EXP = None
 START_DATE = datetime(2025, 11, 27, 4, 0, 0, 0)
-DBT_MODEL_NAME_VALUES = "silver_schedules_values"
-DBT_MODEL_NAME_COLORS = "silver_schedules_colors"
+DBT_MODEL_NAME_VALUES = "int_schedules_values"
+DBT_MODEL_NAME_COLORS = "int_schedules_colors"
 
 default_args = {
     "owner": "Artem",
@@ -16,7 +16,7 @@ default_args = {
 }
 
 with DAG(
-    dag_id="silver_schedules",
+    dag_id="intermidiate_schedules",
     default_args=default_args,
     start_date=START_DATE,
     schedule_interval=CRON_EXP,
