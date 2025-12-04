@@ -29,7 +29,7 @@ from (
 		jsonb_array_elements(content)->>'size' as size,
 		jsonb_array_elements(content)->>'qty' as qty,
 		LOWER(jsonb_array_elements(content)->>'priority') as priority,
-		LOWER(jsonb_array_elements(content)->>'priority') as status
+		LOWER(jsonb_array_elements(content)->>'status') as status
 	from stage.schedules_values
 ) as t1
 where {{ is_project_no('project_no') }}
