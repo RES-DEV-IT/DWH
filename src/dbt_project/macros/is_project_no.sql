@@ -1,3 +1,3 @@
-{% macro is_project_integer(value) %}
-    {{ return(value ~ " ~ '^\\d+$'") }}
+{% macro is_project_no(value) %}
+    {{ return(value ~ " ~ '^P\d+$'") }}
 {% endmacro %}
