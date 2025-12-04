@@ -27,9 +27,15 @@ from (
 		jsonb_array_elements(content)->>'lot' as lot,
 		jsonb_array_elements(content)->>'po_item' as po_item,
 		jsonb_array_elements(content)->>'size' as size,
-		jsonb_array_elements(content)->>'qty' as qty,
+		SPLIT_PART(
+			COALESCE(
+				jsonb_array_elements(content)->>'qty_of_valves',
+				jsonb_array_elements(content)->>'qty_of_pumps'
+			), '.', 1
+		) as qty,
 		LOWER(jsonb_array_elements(content)->>'priority') as priority,
-		LOWER(jsonb_array_elements(content)->>'status') as status
+		LOWER(jsonb_array_elements(content)->>'status') as status,
+		jsonb_array_elements(content)->>'manufacturing_clearance' as manufacturing_clearance
 	from stage.schedules_values
 ) as t1
 where {{ is_project_no('project_no') }}
