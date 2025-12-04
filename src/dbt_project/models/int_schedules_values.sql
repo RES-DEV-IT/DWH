@@ -38,7 +38,7 @@ where {{ is_project_no('project_no') }}
 	and {{ is_positive_integer('size') }}
 	and {{ is_positive_integer('qty') }}
 	and {{ is_priority_valid('priority') }}
-	and {{ is_priority_valid('status') }}
+	and {{ is_status_valid('status') }}
 
 
 {% if is_incremental() %}
