@@ -130,10 +130,10 @@ class KKSTransformer():
     def create_kks(
         self,
         head: str = "10",
-        first_list: list[str] = ["20", "30"],
+        first_list = ["20", "30"],
         body: str = "KBF71AA",
         tail: str = "201",
-        second_list: list[str] = ["100", "200", "300"]):
+        second_list = ["100", "200", "300"]):
 
         head_list = [head]
         head_list.extend(first_list)
