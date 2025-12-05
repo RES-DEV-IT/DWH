@@ -27,8 +27,8 @@ def create_service():
             creds = flow.run_local_server(port=0)
 
     # Сохраните учетные данные для следующего запуска
-    with open(GOOGLE_TOKEN_FOR_MAILING, 'w') as token:
-        token.write(creds.to_json())
+    # with open(GOOGLE_TOKEN_FOR_MAILING, 'w') as token:
+    #     token.write(creds.to_json())
 
     service = build('gmail', 'v1', credentials=creds)
     return service
