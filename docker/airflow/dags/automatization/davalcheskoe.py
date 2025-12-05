@@ -11,6 +11,7 @@ import openpyxl
 from openpyxl.utils import get_column_letter
 from openpyxl import load_workbook
 from openpyxl.styles import Font, Alignment, Border, Side
+from send_file_by_mail import create_service, send_email_with_excel
 
 
 CRON_EXP = None
@@ -631,6 +632,13 @@ def fetch_and_generate():
             head_constants=head_constants,
             tail_constants=tail_constants
         )
+
+        service = create_service()
+        to_email = "letyagin.a@res-e.ru"
+        subject = "test_subject"
+        body = "test_body"
+        excel_file_path = "joined.xlsx"
+        send_email_with_excel(service, to_email, subject, body, excel_file_path)
 
 with DAG(
     dag_id="davalcheskoe",
