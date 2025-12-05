@@ -503,18 +503,20 @@ def generate(stage_po, stage_cs, target_kks, head_constants, tail_constants):
     for kks_number, kks in enumerate(target_kks):
         rows_group = find_info_by_kks(kks_number+1, kks, stage_po, stage_cs)
 
-    for row in rows_group:
-        for i, elem in enumerate(row):
-            sheet.cell(row_idx, i+1).value = elem
-        row_idx += 1
-        prices.append(row[8])
-    for col_number in [1, 2, 3, 4]:
-        sheet.merge_cells(
-            start_row=row_idx-len(rows_group),
-            start_column=col_number,
-            end_row=row_idx-1,
-            end_column=col_number
-        )
+        if len(rows_group) == 0: continue
+    
+        for row in rows_group:
+            for i, elem in enumerate(row):
+                sheet.cell(row_idx, i+1).value = elem
+            row_idx += 1
+            prices.append(row[8])
+        for col_number in [1, 2, 3, 4]:
+            sheet.merge_cells(
+                start_row=row_idx-len(rows_group),
+                start_column=col_number,
+                end_row=row_idx-1,
+                end_column=col_number
+            )
 
     # --- END TEXT
     tail_constants["total_price"] = sum(prices)
