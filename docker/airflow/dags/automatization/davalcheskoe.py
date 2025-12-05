@@ -55,7 +55,7 @@ class KKSTransformer():
         self.pattern_2 = r'\d+[a-zA-Z0-9]*\(\d+(?:\s*,\s*\d+)*\)'
         self.pattern_3 = r'\d+\(\d+(?:\s*,\s*\d+)*\)[a-zA-Z0-9]*\(\d+(?:\s*,\s*\d+)*\)'
 
-    def __call__(self, column_as_list: List[str]) -> List[str]:
+    def __call__(self, column_as_list):
         print(column_as_list)
         transformed_list = []
         for value in column_as_list:
@@ -71,7 +71,7 @@ class KKSTransformer():
 
         return transformed_list
 
-    def process_one_kks(self, kks: str) -> List[str]:
+    def process_one_kks(self, kks: str):
         # 10(20)KBF71AA201(100,200,300)
         if re.match(self.pattern_3, kks) is not None:
             base, first_list, body, tail, second_list = self.parse_pattern_3(kks)
