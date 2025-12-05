@@ -595,6 +595,12 @@ def fetch_and_generate():
         stage_po = get_stage_po("po.xlsx")
         stage_cs = get_stage_cs("cs.xlsx")
 
+        ru_dt1 = convert_date(row["fields"]["Start date"], locale="ru")
+        ru_dt2 = convert_date(row["fields"]["End date"], locale="ru")
+
+        en_dt1 = convert_date(row["fields"]["Start date"], locale="en")
+        en_dt2 = convert_date(row["fields"]["End date"], locale="en")
+
         head_constants = {
             "date": "10.08.2025",
             "manuf_ru": row["fields"]["Manufacturer"],
@@ -602,8 +608,8 @@ def fetch_and_generate():
             "general_contract_ru": row["fields"]["GC rus"],
             "manuf_en": row["fields"]["Manufacturer"],
             "general_contract_en": row["fields"]["GC eng"],
-            "period_ru": f"с {convert_date(row["fields"]["Start date"], locale="ru")} по {convert_date(row["fields"]["End date"], locale="ru")}",
-            "period_en": f"{convert_date(row["fields"]["Start date"], locale="en")}. and {convert_date(row["fields"]["End date"], locale="en")}"
+            "period_ru": f"с {ru_dt1} по {ru_dt2}",
+            "period_en": f"{en_dt1}. and {en_dt2}"
         }
 
         tail_constants = {
