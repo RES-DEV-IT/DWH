@@ -583,7 +583,7 @@ def fetch_and_generate():
 
     for row in rows:
         target_kks = row["fields"]["KKS"].split(", ")
-
+        print("------>>> TARGET KKS", target_kks)
         po_url = rows[0]["fields"]["PO from Excel"]
         po_url = po_url[po_url.find("https"):-1]
 
