@@ -595,6 +595,9 @@ def fetch_and_generate():
         stage_po = get_stage_po("po.xlsx")
         stage_cs = get_stage_cs("cs.xlsx")
 
+        print("STAGE PO COLUMNS", stage_po.columns)
+        print("STAGE CS COLUMNS", stage_cs.columns)
+
         ru_dt1 = convert_date(row["fields"]["Start date"], locale="ru")
         ru_dt2 = convert_date(row["fields"]["End date"], locale="ru")
 
