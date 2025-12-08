@@ -40,7 +40,6 @@ where {{ is_project_no('project_no') }}
 	and {{ is_positive_integer('lot') }}
 	and {{ is_po_item('po_item') }}
 	and {{ is_positive_integer('size') }}
-	and {{ is_positive_integer('qty') }}
 	and {{ is_priority_valid('priority') }}
 	and {{ is_status_valid('status') }}
 	and ( {{ is_status_valid('qty_of_valves') }} or {{ is_status_valid('qty_of_pumps') }})
