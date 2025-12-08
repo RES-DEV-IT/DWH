@@ -48,5 +48,5 @@ where {{ is_project_no('project_no') }}
 
 
 {% if is_incremental() %}
-	where _created_at > (select max(_created_at) from {{this}})
+	and _created_at > (select max(_created_at) from {{ this }})
 {% endif %}
