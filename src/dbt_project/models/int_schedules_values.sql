@@ -14,7 +14,8 @@ select
 	lot::integer,
 	po_item,
 	size::integer,
-	qty::integer,
+	coalesce(qty_of_valves::integer, 0) AS qty_of_valves,
+	coalesce(qty_of_pumps::integer, 0) AS qty_of_pumps,
 	priority,
 	status
 from (
