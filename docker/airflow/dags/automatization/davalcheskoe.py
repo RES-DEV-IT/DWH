@@ -206,26 +206,25 @@ def get_stage_cs(path):
         if not pd.isna(row["Project #"]):
             last_non_null_project = row["Project #"]
 
-            dict_row = {
-                "number": row["№"],
-                "eq_type": row["Equipment type**"],
-                "eq": row["Equipment"],
-                "conn_type": row.get("Connection type"),
-                "qty": row["Quantity, pcs"],
-                "project": last_non_null_project,
-                "hns_code": row.get("HNS Code"),
-                "kks": parsed_kks[0],
-                "add_info": row.get("Additional information"),
-                "weight_act": row.get('Weight of actuator (with bushing), kg'),
-                "weight_trans": row.get('Weight of normalizing transducer, kg'),
-                "total_weight": row.get('Total weight (with bushing), kg'),
-                "contract_delivery_date": row.get('Contract delivery date'),
-                "price_usd": row.get('Price, USD*'),
-                "total_value_usd": row.get('Total value, USD*')
+        dict_row = {
+            "number": row["№"],
+            "eq_type": row["Equipment type**"],
+            "eq": row["Equipment"],
+            "conn_type": row.get("Connection type"),
+            "qty": row["Quantity, pcs"],
+            "project": last_non_null_project,
+            "hns_code": row.get("HNS Code"),
+            "kks": parsed_kks[0],
+            "add_info": row.get("Additional information"),
+            "weight_act": row.get('Weight of actuator (with bushing), kg'),
+            "weight_trans": row.get('Weight of normalizing transducer, kg'),
+            "total_weight": row.get('Total weight (with bushing), kg'),
+            "contract_delivery_date": row.get('Contract delivery date'),
+            "price_usd": row.get('Price, USD*'),
+            "total_value_usd": row.get('Total value, USD*')
+        }
 
-            }
-
-            cs_dict.append(dict_row)
+        cs_dict.append(dict_row)
     
     stage_cs = pd.DataFrame(cs_dict)
     return stage_cs
