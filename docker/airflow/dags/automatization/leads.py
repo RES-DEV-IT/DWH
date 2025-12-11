@@ -98,7 +98,7 @@ default_args = {
 }
 
 with DAG(
-    dag_id="davalcheskoe",
+    dag_id="leads",
     default_args=default_args,
     start_date=START_DATE,
     schedule_interval=CRON_EXP,
