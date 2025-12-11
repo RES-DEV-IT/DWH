@@ -583,6 +583,9 @@ def fetch_and_generate():
     )
 
     for row in rows:
+        record_id = row["id"]
+        print("------>>> RECORD ID", record_id)
+
         target_kks = row["fields"]["KKS"].split(", ")
         print("------>>> TARGET KKS", target_kks)
         po_url = rows[0]["fields"]["PO from Excel"]
@@ -635,12 +638,14 @@ def fetch_and_generate():
         )
 
         service = create_service()
-        to_email = "letyagin.a@res-e.ru"
+        to_email = row["fields"]["Creator's email"], #"letyagin.a@res-e.ru"
         subject = "test_subject"
         body = "test_body"
         excel_file_path = "joined.xlsx"
         send_email_with_excel(service, to_email, subject, body, excel_file_path)
 
+        autogenerate_table.update(record_id, {"Script check": True})
+        
 with DAG(
     dag_id="davalcheskoe",
     default_args=default_args,
