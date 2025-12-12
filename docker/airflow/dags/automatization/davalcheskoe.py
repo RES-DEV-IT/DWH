@@ -603,10 +603,12 @@ def fetch_and_generate():
         # === Скачиваем файлы ===
         download_file(po_url, "po.xlsx")
         download_file(cs_url, "cs.xlsx")
+        print("------>>> DOWNLOADED")
 
         # === Парсим файлы ===
         stage_po = get_stage_po("po.xlsx")
         stage_cs = get_stage_cs("cs.xlsx")
+        print("------>>> STAGED")
 
         print("STAGE PO COLUMNS", stage_po.columns)
         print("STAGE CS COLUMNS", stage_cs.columns)
