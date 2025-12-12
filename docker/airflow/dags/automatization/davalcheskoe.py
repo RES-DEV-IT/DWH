@@ -618,13 +618,20 @@ def fetch_and_generate():
         en_dt1 = convert_date(row["fields"]["Start date"], locale="en")
         en_dt2 = convert_date(row["fields"]["End date"], locale="en")
 
+        manuf_translate_ru = {
+            "Dembla": "«Dembla Valves Limited Company» в лице J.N. Dembla"
+        }
+        manuf_translate_en = {
+            "Dembla": "Dembla Valves Limited Company represented by J.N. Dembla"
+        }
+
         # === Формируем константы для генерации документа ===
         head_constants = {
             "date": "10.08.2025",
-            "manuf_ru": row["fields"]["Manufacturer"],
+            "manuf_ru": manuf_translate_ru[row["fields"]["Manufacturer"]],
             "additional_agreement_no": row["fields"]["Additional agreement number"],
             "general_contract_ru": row["fields"]["GC rus"],
-            "manuf_en": row["fields"]["Manufacturer"],
+            "manuf_en": manuf_translate_en[row["fields"]["Manufacturer"]],
             "general_contract_en": row["fields"]["GC eng"],
             "period_ru": f"с {ru_dt1} по {ru_dt2}",
             "period_en": f"{en_dt1}. and {en_dt2}"
