@@ -582,37 +582,47 @@ def fetch_and_generate():
         user_locale="ru"  # Укажите вашу локаль
     )
 
+    # === Идем по строкам из AT ===
     for row in rows:
+
+        # === id записи ===
         record_id = row["id"]
         print("------>>> RECORD ID", record_id)
 
+        # === KKS которые запросил прользователь ===
         target_kks = row["fields"]["KKS"].split(", ")
         print("------>>> TARGET KKS", target_kks)
+
+        # === Получаем ссылки на файлы ===
         po_url = rows[0]["fields"]["PO from Excel"]
         po_url = po_url[po_url.find("https"):-1]
 
         cs_url = rows[0]["fields"]["CS from Excel"]
         cs_url = cs_url[cs_url.find("https"):-1]
 
+        # === Скачиваем файлы ===
         download_file(po_url, "po.xlsx")
         download_file(cs_url, "cs.xlsx")
 
+        # === Парсим файлы ===
         stage_po = get_stage_po("po.xlsx")
         stage_cs = get_stage_cs("cs.xlsx")
 
         print("STAGE PO COLUMNS", stage_po.columns)
         print("STAGE CS COLUMNS", stage_cs.columns)
 
+        # === Конвертация дат ===
         ru_dt1 = convert_date(row["fields"]["Start date"], locale="ru")
         ru_dt2 = convert_date(row["fields"]["End date"], locale="ru")
 
         en_dt1 = convert_date(row["fields"]["Start date"], locale="en")
         en_dt2 = convert_date(row["fields"]["End date"], locale="en")
 
+        # === Формируем константы для генерации документа ===
         head_constants = {
             "date": "10.08.2025",
             "manuf_ru": row["fields"]["Manufacturer"],
-            "additional_agreement_no": row["fields"]["Additional number by arrangement"],
+            "additional_agreement_no": row["fields"]["Additional agreement number"],
             "general_contract_ru": row["fields"]["GC rus"],
             "manuf_en": row["fields"]["Manufacturer"],
             "general_contract_en": row["fields"]["GC eng"],
@@ -645,7 +655,7 @@ def fetch_and_generate():
         send_email_with_excel(service, to_email, subject, body, excel_file_path)
 
         autogenerate_table.update(record_id, {"Script check": True})
-        
+
 with DAG(
     dag_id="davalcheskoe",
     default_args=default_args,
