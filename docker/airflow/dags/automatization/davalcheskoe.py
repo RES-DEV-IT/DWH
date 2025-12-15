@@ -570,6 +570,7 @@ def download_file(url, save_path):
     # Сохраняем файл
     with open(save_path, 'wb') as file:
         for chunk in response.iter_content(chunk_size=8192):
+            print('chunk')
             file.write(chunk)
 @task
 def fetch_and_generate():
