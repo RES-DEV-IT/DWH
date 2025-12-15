@@ -563,10 +563,11 @@ def generate(stage_po, stage_cs, target_kks, head_constants, tail_constants):
 def download_file(url, save_path):
     # url = "https://v5.airtableusercontent.com/v3/u/48/48/1764936000000/XA0lfHHpFysZTPcsspUfnw/PjFavBdktf_bbl85nsSU-q_ezlPaB_52kVvxeEwSK4Gft4tnyisAwnk1Vl07wBU3MJH0FYdZGlCbU55PFbBNZFZWFJX-s1Ux8meZm_Mr0I4CfJRaGw8SOBwpOSTdaVs-L3VXEebV-agJe2DZg1kwLTcCJweJUg9epccEq2AKTRg55r8jbx4VWMjyb6O4DxOy/sheu7wZolfmwLMSM5YGoj6-VzWFnFPjlnVNymM901gk"
 
+    print("FETCHING", url)
     response = requests.get(url, stream=True)
     response.raise_for_status()  # Проверяем успешность запроса
     #save_path = "lol.xlsx"
-
+    print("STATUS", response.status_code)
     # Сохраняем файл
     with open(save_path, 'wb') as file:
         for chunk in response.iter_content(chunk_size=8192):
