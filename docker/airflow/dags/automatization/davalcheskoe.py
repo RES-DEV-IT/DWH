@@ -533,8 +533,8 @@ def generate(stage_po, stage_cs, target_kks, head_constants, tail_constants):
                 end_column=col_number
             )
 
-    tail_constants["kks"] = new_target_kks
-    
+    tail_constants["kks"] = ", ".join(new_target_kks)
+
     # --- END TEXT
     tail_constants["total_price"] = sum(prices)
     end_text(
