@@ -656,7 +656,7 @@ def fetch_and_generate():
         }
 
         tail_constants = {
-            "amount_of_pieces": len(target_kks) * 3,
+            "amount_of_pieces": stage_cs.shape[0],
             "kks": ", ".join(target_kks),
             "product_type": ", ".join(stage_po["Product type coding"].unique()),
             "invoice_1": row["fields"]["Actuator's invoice"],
