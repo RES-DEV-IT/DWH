@@ -534,6 +534,7 @@ def generate(stage_po, stage_cs, target_kks, head_constants, tail_constants):
             )
 
     tail_constants["kks"] = ", ".join(new_target_kks)
+    tail_constants["amount_of_pieces"] = len(new_target_kks) * 3
 
     # --- END TEXT
     tail_constants["total_price"] = sum(prices)
