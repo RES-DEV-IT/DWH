@@ -506,6 +506,7 @@ def generate(stage_po, stage_cs, target_kks, head_constants, tail_constants):
             sheet.merge_cells(start_row=HEAD_INDEX, start_column=i, end_row=HEAD_INDEX+1, end_column=i)
 
     # --- FILL INFO
+    new_target_kks = [] # хранилище для kks которые нашлись в PO и CS
     prices = []
     row_idx = HEAD_INDEX + 2
 
@@ -517,6 +518,7 @@ def generate(stage_po, stage_cs, target_kks, head_constants, tail_constants):
             continue
         else:
             kks_number += 1
+            new_target_kks.append(kks)
 
         for row in rows_group:
             for i, elem in enumerate(row):
@@ -531,6 +533,8 @@ def generate(stage_po, stage_cs, target_kks, head_constants, tail_constants):
                 end_column=col_number
             )
 
+    tail_constants["kks"] = new_target_kks
+    
     # --- END TEXT
     tail_constants["total_price"] = sum(prices)
     end_text(
@@ -657,7 +661,7 @@ def fetch_and_generate():
 
         tail_constants = {
             "amount_of_pieces": stage_cs.shape[0],
-            "kks": ", ".join(stage_po["KKS Code"].unique()),
+            "kks": None,
             "product_type": ", ".join(stage_po["Product type coding"].unique()),
             "invoice_1": row["fields"]["Actuator's invoice"],
             "invoice_2": row["fields"]["Converters and adapters invoice"],
