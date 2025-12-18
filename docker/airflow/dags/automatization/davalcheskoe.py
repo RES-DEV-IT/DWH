@@ -629,8 +629,8 @@ def fetch_and_generate():
         # === Парсим файлы ===
         stage_po = get_stage_po("po.xlsx")
         stage_cs = get_stage_cs("cs.xlsx")
+        
         print("------>>> STAGED")
-
         print("STAGE PO COLUMNS", stage_po.columns)
         print("STAGE CS COLUMNS", stage_cs.columns)
 
@@ -659,7 +659,7 @@ def fetch_and_generate():
             "period_ru": f"с {ru_dt1} по {ru_dt2}",
             "period_en": f"{en_dt1}. and {en_dt2}"
         }
-        print("--->>> AMOUNT OF PICES", stage_cs.shape)
+        
         tail_constants = {
             "amount_of_pieces": stage_cs.shape[0],
             "kks": None,

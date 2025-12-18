@@ -1,7 +1,7 @@
 {{ 
 	config(
 		materialized='incremental',
-		schema='intermidiate'
+		schema='intermediate'
 	) 
 }}
 
