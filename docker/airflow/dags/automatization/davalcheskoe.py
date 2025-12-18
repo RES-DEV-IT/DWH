@@ -351,7 +351,7 @@ def end_text(sheet, end_idx, constants):
 
     amount_of_pieces = constants["amount_of_pieces"]
     kks = constants["kks"]
-    kks = constants["kks"]
+    
     product_type = constants["product_type"]
     invoice_1 = constants["invoice_1"]
     invoice_2 = constants["invoice_2"]
@@ -658,7 +658,7 @@ def fetch_and_generate():
             "period_ru": f"с {ru_dt1} по {ru_dt2}",
             "period_en": f"{en_dt1}. and {en_dt2}"
         }
-
+        print("--->>> AMOUNT OF PICES", stage_cs.shape)
         tail_constants = {
             "amount_of_pieces": stage_cs.shape[0],
             "kks": None,
