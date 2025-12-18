@@ -508,11 +508,16 @@ def generate(stage_po, stage_cs, target_kks, head_constants, tail_constants):
     # --- FILL INFO
     prices = []
     row_idx = HEAD_INDEX + 2
-    for kks_number, kks in enumerate(target_kks):
+
+    kks_number = 0
+    for kks in target_kks:
         rows_group = find_info_by_kks(kks_number+1, kks, stage_po, stage_cs)
 
-        if len(rows_group) == 0: continue
-    
+        if len(rows_group) == 0:
+            continue
+        else:
+            kks_number += 1
+
         for row in rows_group:
             for i, elem in enumerate(row):
                 sheet.cell(row_idx, i+1).value = elem
