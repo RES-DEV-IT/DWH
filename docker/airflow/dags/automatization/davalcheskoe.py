@@ -251,30 +251,35 @@ def convert_date(dt, locale='ru'):
     return formatted_date
 
 def find_info_by_kks(kks_number, kks, stage_po, stage_cs):
-  cs_rows = stage_cs[stage_cs['kks'].str.contains(kks)].to_dict(orient='records')
-  po_rows = stage_po[stage_po['KKS Code'].str.contains(kks)].to_dict(orient='records')
-  print(cs_rows)
-  print(po_rows)
-  assert len(po_rows) == 1, f"Problem with KKS=('{kks}')"
+    cs_rows = stage_cs[stage_cs['kks'].str.contains(kks)].to_dict(orient='records')
+    po_rows = stage_po[stage_po['KKS Code'].str.contains(kks)].to_dict(orient='records')
+    print(f"Finding info by KKS={kks}")
+    print(f"    > Total rows in PO: {len(po_rows)}")
+    print(f"    > Total rows in CS: {len(cs_rows)}")
+    
+    if len(po_rows) != 1 or len(cs_rows) == 0:
+        print(f"    > PROBLEM with KKS={kks}")
+        return []
+    #assert len(po_rows) == 1, f"Problem with KKS=('{kks}')"
 
-  ret = []
-  for cs_row in cs_rows:
-    ret.append([
-        kks_number,
-        "Сборка клапана с давальческим сырьем / Assembly of valve with the customer supplied equipment",
-        po_rows[0]["Product type coding"],
-        kks,
-        cs_row["eq"],
-        "шт. / pc.",
-        cs_row["price_usd"],
-        "1",
-        cs_row["price_usd"],
-        "1",
-        cs_row["price_usd"],
-        "0",
-        "0"
-    ])
-  return ret
+    ret = []
+    for cs_row in cs_rows:
+        ret.append([
+            kks_number,
+            "Сборка клапана с давальческим сырьем / Assembly of valve with the customer supplied equipment",
+            po_rows[0]["Product type coding"],
+            kks,
+            cs_row["eq"],
+            "шт. / pc.",
+            cs_row["price_usd"],
+            "1",
+            cs_row["price_usd"],
+            "1",
+            cs_row["price_usd"],
+            "0",
+            "0"
+        ])
+    return ret
 
 def start_text(sheet, constants):
     # Распаковка констант
