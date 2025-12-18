@@ -657,7 +657,7 @@ def fetch_and_generate():
 
         tail_constants = {
             "amount_of_pieces": stage_cs.shape[0],
-            "kks": ", ".join(target_kks),
+            "kks": ", ".join(stage_po["KKS Code"].unique()),
             "product_type": ", ".join(stage_po["Product type coding"].unique()),
             "invoice_1": row["fields"]["Actuator's invoice"],
             "invoice_2": row["fields"]["Converters and adapters invoice"],
