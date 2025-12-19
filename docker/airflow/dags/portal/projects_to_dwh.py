@@ -1,6 +1,9 @@
 import re
 from pyairtable import Table, Api
 from airflow.providers.postgres.hooks.postgres import PostgresHook
+from airflow.decorators import task
+from airflow import DAG
+import datetime
 
 
 # API TOKENS
@@ -30,7 +33,7 @@ def get_table(
 
     raise ValueError(f"Can't find base with name: {base_name}")
 
-
+@task
 def fetch_projects_table():
     projects_table = get_table("Portal", "Portal 2.0.3", "Projects")
     
@@ -61,7 +64,7 @@ def fetch_projects_table():
 
     # SQL запрос для вставки
     insert_query = f"""
-    INSERT INTO portal.projects (manuf, pono)
+    INSERT INTO portal.projects (pono, manuf)
     VALUES (%s, %s)
     """
     
@@ -72,6 +75,16 @@ def fetch_projects_table():
     cursor.close()
     conn.close()
 
-if __name__ == "__main__":
+default_args = {
+    "owner": "Artem",
+    "retries": 0
+}
+
+with DAG(
+    dag_id=f"portal_projects",
+    default_args=default_args,
+    start_date=datetime(2025, 11, 27, 4, 0, 0, 0),
+    schedule_interval="0 0 * * *",
+    catchup=False
+) as dags:
     fetch_projects_table()
-    
