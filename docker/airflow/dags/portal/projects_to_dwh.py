@@ -69,7 +69,7 @@ def fetch_projects_table():
     """
     
     # Массовая вставка
-    cursor.executemany(data_to_insert, insert_query)
+    cursor.executemany(insert_query, data_to_insert)
     
     conn.commit()
     cursor.close()
