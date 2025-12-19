@@ -60,7 +60,7 @@ def fetch_projects_table():
     cursor = conn.cursor()
     
     cursor.execute("TRUNCATE TABLE portal.projects")
-    cursor.commit()
+    conn.commit()
 
     # SQL запрос для вставки
     insert_query = f"""
