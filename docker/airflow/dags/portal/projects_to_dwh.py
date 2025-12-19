@@ -50,7 +50,7 @@ def fetch_projects_table():
         if "PO No." in row["fields"] and "Manufacturer" in row["fields"]:
             data_to_insert.append((
                 row["fields"]["PO No."],
-                row["fields"]["Manufacturer"]
+                row["fields"]["Manufacturer"][0]
             ))
 
     # Загружаем данные в PG
