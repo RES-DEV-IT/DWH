@@ -284,6 +284,7 @@ def find_info_by_kks(kks_number, kks, stage_po, stage_cs):
 def start_text(sheet, constants):
     # Распаковка констант
     date = constants["date"]
+    pono = constants["pono"]
     manuf_ru = constants["manuf_ru"]
     additional_agreement_no = constants["additional_agreement_no"]
     general_contract_ru = constants["general_contract_ru"]
@@ -298,8 +299,8 @@ def start_text(sheet, constants):
     # main_text = f"""Общество с ограниченной ответственностью {manuf_ru} (далее - Переработчик) для выполнения работ по Дополнительному соглашению {additional_agreement_no} к Рамочному договору {general_contract_ru}, составило настоящий отчет об использовании материалов (далее - Отчет), переданных обществом с ограниченной ответственностью «РЭС Инжиниринг» в лице Генерального директора Тихонова Сергея Сергеевича, действующего на основании Устава в редакции от «12» мая 2022 года, далее именуемое «Давалец» о том, что: /
     # Dembla Valves Limited Company represented by J.N. Dembla (hereinafter referred to as the Processor), hereinafter referred to as the Supplying Customer to perform works under Supplementary Agreement {additional_agreement_no} to {general_contract_ru}, has drawn up this report on the use of equipment (hereinafter referred to as the "Report") handed over to RES Engineering Limited Liability Company represented by Sergey Tikhonov, General Director, acting on the basis of the Charter as amended on May 12, 2022, indicating that:"""
     
-    main_text = f"""Общество с ограниченной ответственностью {manuf_ru} (далее - Переработчик) для выполнения работ по Дополнительному соглашению {additional_agreement_no} к Рамочному договору {general_contract_ru}, составило настоящий отчет об использовании материалов (далее - Отчет), переданных обществом с ограниченной ответственностью «РЭС Инжиниринг» в лице Генерального директора Тихонова Сергея Сергеевича, действующего на основании Устава в редакции от «12» мая 2022 года, далее именуемое «Давалец» о том, что: /
-    {manuf_en} (hereinafter referred to as the "Processor"), for the purpose of performing the work under the Supplementary Agreement {additional_agreement_no} to the {general_contract_en}, has prepared this Materials Usage Report (hereinafter referred to as the "Report"). The Report relates to materials transferred by the Limited Liability Company "RES Engineering," represented by General Director Sergey Sergeevich Tikhonov, acting on the basis of the Charter, as amended on May 12, 2022. The Report"""
+    main_text = f"""Общество с ограниченной ответственностью {manuf_ru} (далее - Переработчик) для выполнения работ по Дополнительному соглашению {additional_agreement_no} к Рамочному договору {general_contract_ru}, {pono}, составило настоящий отчет об использовании материалов (далее - Отчет), переданных обществом с ограниченной ответственностью «РЭС Инжиниринг» в лице Генерального директора Тихонова Сергея Сергеевича, действующего на основании Устава в редакции от «12» мая 2022 года, далее именуемое «Давалец» о том, что: /
+    {manuf_en} (hereinafter referred to as the "Processor"), for the purpose of performing the work under the Supplementary Agreement {additional_agreement_no} to the {general_contract_en}, {pono}, has prepared this Materials Usage Report (hereinafter referred to as the "Report"). The Report relates to materials transferred by the Limited Liability Company "RES Engineering," represented by General Director Sergey Sergeevich Tikhonov, acting on the basis of the Charter, as amended on May 12, 2022. The Report"""
     
     first_point_text = "1.	Давалец передал, а Переработчик принял материалы для выполнения работ. / The Supplying Customer has handed over and the Processor has accepted the materials to perform the works."
     second_point_text = f"2.	В период {period_ru} переданные Заказчиком материалы использованы Подрядчиком при выполнении работ, а именно: / In the period {period_en}, the materials handed over by the Customer were used by the Contractor to perform the works, namely:"
@@ -507,6 +508,7 @@ def generate(stage_po, stage_cs, target_kks, head_constants, tail_constants):
 
     # --- FILL INFO
     new_target_kks = [] # хранилище для kks которые нашлись в PO и CS
+    new_product_types = []
     prices = []
     row_idx = HEAD_INDEX + 2
 
@@ -519,7 +521,7 @@ def generate(stage_po, stage_cs, target_kks, head_constants, tail_constants):
         else:
             kks_number += 1
             new_target_kks.append(kks)
-
+            new_product_types.append()
         for row in rows_group:
             for i, elem in enumerate(row):
                 sheet.cell(row_idx, i+1).value = elem
@@ -605,6 +607,9 @@ def fetch_and_generate():
 
     # === Идем по строкам из AT ===
     for row in rows:
+        
+        # === Получаем имя PO ===
+        pono = row["fields"]["PO No"]
 
         # === id записи ===
         record_id = row["id"]
@@ -651,6 +656,7 @@ def fetch_and_generate():
         # === Формируем константы для генерации документа ===
         head_constants = {
             "date": "10.08.2025",
+            "pono": pono,
             "manuf_ru": manuf_translate_ru[row["fields"]["Manufacturer"]],
             "additional_agreement_no": row["fields"]["Additional agreement number"],
             "general_contract_ru": row["fields"]["GC rus"],
