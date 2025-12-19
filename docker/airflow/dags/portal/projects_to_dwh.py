@@ -83,7 +83,7 @@ default_args = {
 with DAG(
     dag_id=f"portal_projects",
     default_args=default_args,
-    start_date=datetime(2025, 11, 27, 4, 0, 0, 0),
+    start_date=datetime.datetime(2025, 11, 27, 4, 0, 0, 0),
     schedule_interval="0 0 * * *",
     catchup=False
 ) as dags:
