@@ -521,7 +521,8 @@ def generate(stage_po, stage_cs, target_kks, head_constants, tail_constants):
         else:
             kks_number += 1
             new_target_kks.append(kks)
-            new_product_types.append()
+            new_product_types.append(rows_group[0][2]) # Добавляем product type
+            
         for row in rows_group:
             for i, elem in enumerate(row):
                 sheet.cell(row_idx, i+1).value = elem
