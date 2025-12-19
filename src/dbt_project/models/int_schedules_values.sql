@@ -43,7 +43,7 @@ where {{ is_project_no('project_no') }}
 	and {{ is_priority_valid('priority') }}
 	and {{ is_status_valid('status') }}
 	and ( {{ is_positive_integer('qty_of_valves') }} or {{ is_positive_integer('qty_of_pumps') }})
-
+	
 {% if is_incremental() %}
 	and _created_at > (select max(_created_at) from {{ this }})
 {% endif %}
