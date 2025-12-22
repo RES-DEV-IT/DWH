@@ -6,7 +6,7 @@ from gspread import service_account
 
 SERVICE_ACCOUNT_CREDS_PATH = "./plugins/schedules/download/submitted-tables-download-v02-750e825a7950.json"
 LEADS_URL = "https://docs.google.com/spreadsheets/d/1wbIJEoLoMxag7TBThrn6sPGPgg_t7-qbeauv2SdXoxU"
-LEADS_URL = "https://docs.google.com/spreadsheets/d/1GLj02RRCUvtD7yR_Al5_PSCdDapjOZaw8AFjZEf_Z1g" # COPY
+# LEADS_URL = "https://docs.google.com/spreadsheets/d/1GLj02RRCUvtD7yR_Al5_PSCdDapjOZaw8AFjZEf_Z1g" # COPY
 # API TOKENS
 API_TOKENS = {
     "Portal": "patpHD9iVIlsFGE2w.80f76907cb8bdc1dffd465c3eb3f275bc26a7e247727bdd5559b07decc0eb7d9"
