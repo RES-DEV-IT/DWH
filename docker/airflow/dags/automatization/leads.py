@@ -40,7 +40,7 @@ def insert_to_gs(data_to_insert):
     worksheet = client.open_by_url(LEADS_URL).worksheet("Лиды AE")
     # client.open_by_url(LEADS_URL).add_worksheet(title="New sheet", rows=100, cols=20)
 
-    row_start = 1
+    row_start = 2
     col_start = 1
 
     worksheet.update(
