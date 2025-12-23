@@ -21,6 +21,9 @@ def fetch_changes():
     for row in records:
         print(row)
 
+    cursor.close()
+    conn.close()
+    
 default_args = {
     "owner": "Artem",
     "retries": 0
