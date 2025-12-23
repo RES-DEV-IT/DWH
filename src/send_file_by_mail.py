@@ -99,10 +99,51 @@ def send_email_with_excel(service, to_email, subject, body, excel_file_path):
         print(f'Произошла ошибка: {error}')
         return None
 
+def send_email_with_text(service, to_email, subject, body):
+    # Создаем email сообщение
+    message = EmailMessage()
+    
+    # Заполняем заголовки
+    message['To'] = to_email
+    message['From'] = 'me'  # 'me' означает авторизованного пользователя
+    message['Subject'] = subject
+
+    # Устанавливаем текст письма
+    message.set_content(body)
+
+    # Кодируем сообщение в base64
+    encoded_message = base64.urlsafe_b64encode(message.as_bytes()).decode()
+    
+    # Создаем тело запроса для API
+    create_message = {'raw': encoded_message}
+    
+    try:
+        # Отправляем сообщение
+        send_message = service.users().messages().send(
+            userId="me",
+            body=create_message
+        ).execute()
+        
+        print(f'Email отправлен! Message Id: {send_message["id"]}')
+        return send_message
+    
+    except HttpError as error:
+        print(f'Произошла ошибка: {error}')
+        return None
+
 if __name__ == "__main__":
+
+    # === SEND EXCEL ===
+    # service = create_service()
+    # to_email = "letyagin.a@res-e.ru"
+    # subject = "test_subject"
+    # body = "test_body"
+    # excel_file_path = "tmp/Dembla.xlsx"
+    # send_email_with_excel(service, to_email, subject, body, excel_file_path)
+
+    # === SEND TEXT ===
     service = create_service()
     to_email = "letyagin.a@res-e.ru"
     subject = "test_subject"
-    body = "test_body"
-    excel_file_path = "tmp/Dembla.xlsx"
-    send_email_with_excel(service, to_email, subject, body, excel_file_path)
+    body = "main text"
+    send_email_with_text(service, to_email, subject, body)
