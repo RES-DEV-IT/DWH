@@ -11,7 +11,7 @@ def fetch_changes():
     conn = hook.get_conn()
     cursor = conn.cursor()
 
-    records = cursor.get_records("""
+    records = hook.get_records("""
         select *
         from schedules_changes as s
         left join project_responsible as pr
