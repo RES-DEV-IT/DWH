@@ -6,7 +6,7 @@ import datetime
 
 @task
 def fetch_changes():
-    hook = PostgresHook(postges_conn_id="resdb_connection")
+    hook = PostgresHook(postgres_conn_id="resdb_connection")
 
     conn = hook.get_conn()
     cursor = conn.cursor()
@@ -23,7 +23,7 @@ def fetch_changes():
 
     cursor.close()
     conn.close()
-    
+
 default_args = {
     "owner": "Artem",
     "retries": 0
