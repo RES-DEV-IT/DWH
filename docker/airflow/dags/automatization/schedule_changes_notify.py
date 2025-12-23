@@ -7,7 +7,7 @@ from googleapiclient.discovery import build
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
-from send_file_by_mail import create_service, send_email_with_text
+from send_file_by_mail import create_service, send_email_with_html
 from collections import defaultdict
 from html import escape
 
@@ -192,7 +192,7 @@ def fetch_changes():
         
         html_body = for_content_to_html({responsible: for_content[responsible]})
 
-        send_email_with_text(service, to_email, subject, html_body)
+        send_email_with_html(service, to_email, subject, html_body)
 
 default_args = {
     "owner": "Artem",

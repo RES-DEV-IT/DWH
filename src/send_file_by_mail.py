@@ -131,6 +131,26 @@ def send_email_with_text(service, to_email, subject, body):
         print(f'Произошла ошибка: {error}')
         return None
 
+def send_email_with_html(service, to_email, subject, html_body):
+    message = EmailMessage()
+    message["To"] = to_email
+    message["From"] = "me"
+    message["Subject"] = subject
+
+    # ❗ ВАЖНО: subtype="html"
+    message.set_content(html_body, subtype="html")
+
+    encoded_message = base64.urlsafe_b64encode(
+        message.as_bytes()
+    ).decode("utf-8")
+
+    create_message = {"raw": encoded_message}
+
+    return service.users().messages().send(
+        userId="me",
+        body=create_message
+    ).execute()
+
 if __name__ == "__main__":
 
     # === SEND EXCEL ===
@@ -147,3 +167,4 @@ if __name__ == "__main__":
     subject = "test_subject"
     body = "main text"
     send_email_with_text(service, to_email, subject, body)
+
