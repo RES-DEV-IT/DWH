@@ -9,6 +9,7 @@ from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from send_file_by_mail import create_service, send_email_with_text
 from collections import defaultdict
+from html import escape
 
 
 SCOPES = ['https://www.googleapis.com/auth/gmail.send']
@@ -47,8 +48,7 @@ def build_for_content(records):
         ))
     return for_content
 
-from html import escape
-from datetime import datetime
+
 
 def for_content_to_html(for_content: dict, title: str = "Найдены переносы") -> str:
     """
@@ -58,7 +58,7 @@ def for_content_to_html(for_content: dict, title: str = "Найдены пере
 
     # Базовые стили (инлайн/внутри <style> обычно ок в почте; но инлайн ещё надёжнее)
     # Здесь сделано максимально совместимо с почтовыми клиентами.
-    now = datetime.now().strftime("%Y-%m-%d %H:%M")
+    now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
 
     def fmt_change(po_item, key, old, new):
         po_item = "" if po_item is None else str(po_item)
