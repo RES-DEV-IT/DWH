@@ -11,32 +11,6 @@ from send_file_by_mail import create_service, send_email_with_text
 from collections import defaultdict
 from html import escape
 
-
-SCOPES = ['https://www.googleapis.com/auth/gmail.send']
-CREDS_PATH = "/".join(__file__.replace("\\", "/").split("/")[:-1]) + "/client_secret_19656404523_idm8shvv74tdk0qmoo0k93de2t9vfqvj_apps.json"
-GOOGLE_TOKEN_FOR_MAILING = "/".join(__file__.replace("\\", "/").split("/")[:-1]) + '/google_token_for_mailing.json'
-
-
-
-def create_service():
-    creds = None
-    if os.path.exists(GOOGLE_TOKEN_FOR_MAILING):
-        creds = Credentials.from_authorized_user_file(GOOGLE_TOKEN_FOR_MAILING, SCOPES)
-    # Если нет валидных учетных данных, запросите у пользователя войти
-    if not creds or not creds.valid:
-        if creds and creds.expired and creds.refresh_token:
-            creds.refresh(Request())
-        else:
-            flow = InstalledAppFlow.from_client_secrets_file(CREDS_PATH, SCOPES)
-            creds = flow.run_local_server(port=0)
-
-    # Сохраните учетные данные для следующего запуска
-    # with open(GOOGLE_TOKEN_FOR_MAILING, 'w') as token:
-    #     token.write(creds.to_json())
-
-    service = build('gmail', 'v1', credentials=creds)
-    return service
-
 def build_for_content(records):
     for_content = defaultdict(lambda: defaultdict(list))
     for row in records:
@@ -47,8 +21,6 @@ def build_for_content(records):
             row["current_value"],
         ))
     return for_content
-
-
 
 def for_content_to_html(for_content: dict, title: str = "Найдены переносы") -> str:
     """
