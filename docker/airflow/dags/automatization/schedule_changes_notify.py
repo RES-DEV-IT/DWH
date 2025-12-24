@@ -172,10 +172,12 @@ def fetch_changes():
     cursor = conn.cursor()
 
     records = hook.get_records("""
-        select s.project, po_item, key, old_value, current_value, responsible
+        select s.project, po_item, key, try_parse_date(old_value), try_parse_date(current_value), responsible
         from schedules_changes as s
         left join project_responsible as pr
         on s.project = pr.project
+        where try_parse_date(old_value) is not null
+          and try_parse_date(current_value) is not null
     """)
 
     cursor.close()
