@@ -149,6 +149,20 @@ def for_content_to_html(for_content: dict, title: str = "Найдены пере
 """
     return html
 
+def ru_person_to_mail(ru_person):
+    person_to_mail = {
+        "Константин Исаев": "isaev@res-e.ru",
+        "Дмитрий Пухов": "puhov@res-e.ru",
+        "Пухов Дмитрий": "puhov@res-e.ru",
+        "Виктория Шелудько": "sheludko@res-e.ru",
+        "Анастасия Горбулина": "gorbulina@res-e.ru",
+        "Ирина Пшенцова": "pshentsova@res-e.ru",
+        "Андрей Бойко": "boyko@res-e.ru"
+    }
+
+    assert ru_person in person_to_mail, f"Can't find {ru_person} in base"
+
+    return person_to_mail[ru_person]
 
 @task
 def fetch_changes():
@@ -177,6 +191,7 @@ def fetch_changes():
         } 
     for row in records]
 
+    # === Готовим данные ===
     # for_content = {
     #  resp_1: {project: [po_item, key, old_value, current_value]},
     #  resp_2: {project: [po_item, key, old_value, current_value]}
@@ -186,11 +201,12 @@ def fetch_changes():
     
     service = create_service()
     to_email = "letyagin.a@res-e.ru"
-    subject = "test_subject"
+    subject = "Переносы в графиках"
     
     for responsible in for_content:
-        
-        html_body = for_content_to_html({responsible: for_content[responsible]})
+        responsible_mail = ru_person_to_mail(responsible)
+
+        html_body = for_content_to_html({responsible + f"({responsible_mail})": for_content[responsible]})
 
         send_email_with_html(service, to_email, subject, html_body)
 

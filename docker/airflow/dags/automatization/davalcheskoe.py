@@ -249,6 +249,9 @@ def convert_date(dt, locale='ru'):
       formatted_date = f'«{day}» {months_ru[month]} {year} г.'
     elif locale == 'en':
       formatted_date = f'{months_en[month]} {day}, {year}'
+    elif locale == 'points': # 01.01.2001
+        formatted_date = f"{day}.{month}.{year}"
+
     return formatted_date
 
 def find_info_by_kks(kks_number, kks, stage_po, stage_cs):
@@ -288,9 +291,8 @@ def start_text(sheet, constants):
     pono = constants["pono"]
     manuf_ru = constants["manuf_ru"]
     additional_agreement_no = constants["additional_agreement_no"]
-    general_contract_ru = constants["general_contract_ru"]
+    general_contract = constants["general_contract"]
     manuf_en = constants["manuf_en"]
-    general_contract_en = constants["general_contract_en"]
     period_ru = constants["period_ru"]
     period_en = constants["period_en"]
 
@@ -300,8 +302,8 @@ def start_text(sheet, constants):
     # main_text = f"""Общество с ограниченной ответственностью {manuf_ru} (далее - Переработчик) для выполнения работ по Дополнительному соглашению {additional_agreement_no} к Рамочному договору {general_contract_ru}, составило настоящий отчет об использовании материалов (далее - Отчет), переданных обществом с ограниченной ответственностью «РЭС Инжиниринг» в лице Генерального директора Тихонова Сергея Сергеевича, действующего на основании Устава в редакции от «12» мая 2022 года, далее именуемое «Давалец» о том, что: /
     # Dembla Valves Limited Company represented by J.N. Dembla (hereinafter referred to as the Processor), hereinafter referred to as the Supplying Customer to perform works under Supplementary Agreement {additional_agreement_no} to {general_contract_ru}, has drawn up this report on the use of equipment (hereinafter referred to as the "Report") handed over to RES Engineering Limited Liability Company represented by Sergey Tikhonov, General Director, acting on the basis of the Charter as amended on May 12, 2022, indicating that:"""
     
-    main_text = f"""Общество с ограниченной ответственностью {manuf_ru} (далее - Переработчик) для выполнения работ по Дополнительному соглашению {additional_agreement_no} к Рамочному договору {general_contract_ru}, {pono}, составило настоящий отчет об использовании материалов (далее - Отчет), переданных обществом с ограниченной ответственностью «РЭС Инжиниринг» в лице Генерального директора Тихонова Сергея Сергеевича, действующего на основании Устава в редакции от «12» мая 2022 года, далее именуемое «Давалец» о том, что: /
-    {manuf_en} (hereinafter referred to as the "Processor"), for the purpose of performing the work under the Supplementary Agreement {additional_agreement_no} to the {general_contract_en}, {pono}, has prepared this Materials Usage Report (hereinafter referred to as the "Report"). The Report relates to materials transferred by the Limited Liability Company "RES Engineering," represented by General Director Sergey Sergeevich Tikhonov, acting on the basis of the Charter, as amended on May 12, 2022. The Report"""
+    main_text = f"""Общество с ограниченной ответственностью {manuf_ru} (далее - Переработчик) для выполнения работ по Дополнительному соглашению {additional_agreement_no} к Рамочному договору {general_contract}, {pono}, составило настоящий отчет об использовании материалов (далее - Отчет), переданных обществом с ограниченной ответственностью «РЭС Инжиниринг» в лице Генерального директора Тихонова Сергея Сергеевича, действующего на основании Устава в редакции от «12» мая 2022 года, далее именуемое «Давалец» о том, что: /
+    {manuf_en} (hereinafter referred to as the "Processor"), for the purpose of performing the work under the Supplementary Agreement {additional_agreement_no} to the {general_contract}, {pono}, has prepared this Materials Usage Report (hereinafter referred to as the "Report"). The Report relates to materials transferred by the Limited Liability Company "RES Engineering," represented by General Director Sergey Sergeevich Tikhonov, acting on the basis of the Charter, as amended on May 12, 2022. The Report"""
     
     first_point_text = "1.	Давалец передал, а Переработчик принял материалы для выполнения работ. / The Supplying Customer has handed over and the Processor has accepted the materials to perform the works."
     second_point_text = f"2.	В период {period_ru} переданные Заказчиком материалы использованы Подрядчиком при выполнении работ, а именно: / In the period {period_en}, the materials handed over by the Customer were used by the Contractor to perform the works, namely:"
@@ -649,6 +651,8 @@ def fetch_and_generate():
         en_dt1 = convert_date(row["fields"]["Start date"], locale="en")
         en_dt2 = convert_date(row["fields"]["End date"], locale="en")
 
+        pts_dt = convert_date(row["fields"]["End date"], locale="points")
+
         manuf_translate_ru = {
             "Dembla": "«Dembla Valves Limited Company» в лице J.N. Dembla"
         }
@@ -656,15 +660,21 @@ def fetch_and_generate():
             "Dembla": "Dembla Valves Limited Company represented by J.N. Dembla"
         }
 
+        if "full_manufacturer_name_lookup" in row['fields'] and "director_name_lookup" in row["fields"]:
+            manuf_ru = f"«{row['fields']['full_manufacturer_name_lookup']}» в лице {row['fields']['director_name_lookup']}"
+            manuf_en = f"{row['fields']['full_manufacturer_name_lookup']} represented by {row['fields']['director_name_lookup']}"
+        else:
+            manuf_ru = "«...» в лице ..."
+            manuf_en = "... represented by ..."
+            
         # === Формируем константы для генерации документа ===
         head_constants = {
-            "date": "10.08.2025",
+            "date": pts_dt,
             "pono": pono,
-            "manuf_ru": manuf_translate_ru[row["fields"]["Manufacturer"]],
+            "manuf_ru": manuf_ru,
             "additional_agreement_no": row["fields"]["Additional agreement number"],
-            "general_contract_ru": row["fields"]["GC rus"],
-            "manuf_en": manuf_translate_en[row["fields"]["Manufacturer"]],
-            "general_contract_en": row["fields"]["GC eng"],
+            "general_contract": row["fields"]["GC"],
+            "manuf_en": manuf_en,
             "period_ru": f"с {ru_dt1} по {ru_dt2}",
             "period_en": f"{en_dt1}. and {en_dt2}"
         }
