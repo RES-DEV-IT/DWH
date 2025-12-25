@@ -455,7 +455,7 @@ def end_text(sheet, end_idx, constants):
     sheet.cell(ROW_NUMER, 1).alignment = Alignment(horizontal='left', vertical='center', wrap_text=True)
     sheet.merge_cells(start_row=ROW_NUMER, start_column=1, end_row=ROW_NUMER, end_column=4)
 
-def set_borders(sheet):
+def set_borders(sheet, start_idx, end_idx):
     # Define a border style with no borders
     no_border_side = Side(border_style=None)
     no_border = Border(left=no_border_side,
@@ -463,9 +463,18 @@ def set_borders(sheet):
                     top=no_border_side,
                     bottom=no_border_side)
 
-    for row in sheet.iter_rows():
+
+    # Определяем стиль границы
+    thin_border = Border(
+        left=Side(style='thin'),
+        right=Side(style='thin'),
+        top=Side(style='thin'),
+        bottom=Side(style='thin')
+    )
+
+    for row in sheet.iter_rows(min_row=start_idx, max_row=end_idx, min_col=1, max_col=13):
         for cell in row:
-            cell.border = None
+            cell.border = thin_border
 
 def generate(stage_po, stage_cs, target_kks, head_constants, tail_constants):
     workbook = openpyxl.Workbook()
@@ -525,12 +534,14 @@ def generate(stage_po, stage_cs, target_kks, head_constants, tail_constants):
             kks_number += 1
             new_target_kks.append(kks)
             new_product_types.append(rows_group[0][2]) # Добавляем product type
-            
+        
+        # === Добавляем строки ===
         for row in rows_group:
             for i, elem in enumerate(row):
                 sheet.cell(row_idx, i+1).value = elem
             row_idx += 1
             prices.append(row[8])
+        # === Объединяем строки ===
         for col_number in [1, 2, 3, 4]:
             sheet.merge_cells(
                 start_row=row_idx-len(rows_group),
@@ -538,6 +549,7 @@ def generate(stage_po, stage_cs, target_kks, head_constants, tail_constants):
                 end_row=row_idx-1,
                 end_column=col_number
             )
+        
 
     tail_constants["kks"] = ", ".join(new_target_kks)
     tail_constants["amount_of_pieces"] = len(new_target_kks) * 3
@@ -573,7 +585,7 @@ def generate(stage_po, stage_cs, target_kks, head_constants, tail_constants):
                 cell.font = style_range["font"]
 
     # --- BORDERS
-    set_borders(sheet)
+    set_borders(sheet, HEAD_INDEX + 2, row_idx)
 
     # --- COL WIDTH
     cols_width = [10, 25, 25, 25, 25, 25, 25, 10, 25, 10, 25, 10, 25]
@@ -653,20 +665,13 @@ def fetch_and_generate():
 
         pts_dt = convert_date(row["fields"]["End date"], locale="points")
 
-        manuf_translate_ru = {
-            "Dembla": "«Dembla Valves Limited Company» в лице J.N. Dembla"
-        }
-        manuf_translate_en = {
-            "Dembla": "Dembla Valves Limited Company represented by J.N. Dembla"
-        }
-
         if "full_manufacturer_name_lookup" in row['fields'] and "director_name_lookup" in row["fields"]:
             manuf_ru = f"«{row['fields']['full_manufacturer_name_lookup']}» в лице {row['fields']['director_name_lookup']}"
             manuf_en = f"{row['fields']['full_manufacturer_name_lookup']} represented by {row['fields']['director_name_lookup']}"
         else:
             manuf_ru = "«...» в лице ..."
             manuf_en = "... represented by ..."
-            
+
         # === Формируем константы для генерации документа ===
         head_constants = {
             "date": pts_dt,
