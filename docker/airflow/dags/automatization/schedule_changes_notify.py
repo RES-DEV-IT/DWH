@@ -104,7 +104,7 @@ def for_content_to_html(for_content: dict, title: str = "Найдены пере
                 po_blocks.append(f"""
                 <div style="margin-top:12px;">
                   <div style="font-size:14px; font-weight:700; color:#333; margin-bottom:6px;">
-                    {escape(str(po_item))}
+                    item - {escape(str(po_item))}
                   </div>
                   <table role="presentation" cellpadding="0" cellspacing="0" border="0"
                          style="width:100%; border:1px solid #eee; border-radius:10px; border-collapse:separate; overflow:hidden;">
