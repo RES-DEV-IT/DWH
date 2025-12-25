@@ -222,7 +222,7 @@ def fetch_changes():
     for_content = build_for_content(records=records)
     
     service = create_service()
-    to_email = ["letyagin.a@res-e.ru"]#, "meyendorff@res-e.ru"]
+    to_email = ["letyagin.a@res-e.ru", "meyendorff@res-e.ru"]
     subject = "Переносы в графиках"
     
     for responsible in for_content:
