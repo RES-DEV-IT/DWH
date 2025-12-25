@@ -585,7 +585,7 @@ def generate(stage_po, stage_cs, target_kks, head_constants, tail_constants):
                 cell.font = style_range["font"]
 
     # --- BORDERS
-    set_borders(sheet, HEAD_INDEX + 2, row_idx)
+    set_borders(sheet, HEAD_INDEX, row_idx)
 
     # --- COL WIDTH
     cols_width = [10, 25, 25, 25, 25, 25, 25, 10, 25, 10, 25, 10, 25]
