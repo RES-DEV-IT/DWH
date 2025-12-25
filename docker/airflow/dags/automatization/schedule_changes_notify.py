@@ -22,30 +22,32 @@ def build_for_content(records):
         ))
     return for_content
 
-def for_content_to_html(for_content: dict, title: str = "Найдены переносы") -> str:
+from html import escape
+from datetime import datetime
+from collections import defaultdict
+
+def for_content_to_html(for_content: dict, title: str = "Найдены переносы", max_changes_per_po: int = 5) -> str:
     """
     Делает HTML-письмо из структуры:
     {responsible: {project: [(po_item, key, old, new), ...]}}
+
+    Новое:
+    - Группирует изменения по po_item
+    - Если изменений по po_item > max_changes_per_po: показывает первые N и строку "и все следующие этапы"
     """
 
-    # Базовые стили (инлайн/внутри <style> обычно ок в почте; но инлайн ещё надёжнее)
-    # Здесь сделано максимально совместимо с почтовыми клиентами.
-    now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
+    now = datetime.now().strftime("%Y-%m-%d %H:%M")
 
-    def fmt_change(po_item, key, old, new):
-        po_item = "" if po_item is None else str(po_item)
+    def fmt_change(key, old, new):
         key = "" if key is None else str(key)
         old = "" if old is None else str(old)
         new = "" if new is None else str(new)
-
-        # Вариант строки: "PO-123 • key1 — old → new"
-        left = f"{escape(po_item)} • {escape(key)}" if po_item else escape(key)
 
         return f"""
         <tr>
           <td style="padding:6px 10px; border-bottom:1px solid #eee;">
             <div style="font-size:14px; line-height:1.35;">
-              <div style="font-weight:600;">{left}</div>
+              <div style="font-weight:600;">{escape(key)}</div>
               <div style="color:#444; margin-top:2px;">
                 <span style="color:#777;">{escape(old)}</span>
                 <span style="color:#999;">&nbsp;→&nbsp;</span>
@@ -56,12 +58,16 @@ def for_content_to_html(for_content: dict, title: str = "Найдены пере
         </tr>
         """
 
-    # Сортировки для стабильного вида
-    responsibles = sorted(for_content.keys(), key=lambda x: str(x).lower())
+    def fmt_more_row():
+        return f"""
+        <tr>
+          <td style="padding:8px 10px; background:#fafafa; color:#555; font-size:13px;">
+            <i>… и все следующие этапы</i>
+          </td>
+        </tr>
+        """
 
-    # Если ты генеришь письмо "на каждого человека отдельно", то можно передавать
-    # for_content уже для одного responsible.
-    # Но функция умеет и много людей (будет блоками).
+    responsibles = sorted(for_content.keys(), key=lambda x: str(x).lower())
     blocks = []
 
     for responsible in responsibles:
@@ -69,36 +75,54 @@ def for_content_to_html(for_content: dict, title: str = "Найдены пере
         project_names = sorted(projects.keys(), key=lambda x: str(x).lower())
 
         project_blocks = []
+
         for project in project_names:
             changes = projects.get(project, []) or []
-            # На всякий случай: если кто-то положил не tuples
-            normalized = []
+
+            # Группируем по po_item
+            grouped = defaultdict(list)
             for item in changes:
                 if isinstance(item, (list, tuple)) and len(item) == 4:
-                    normalized.append(item)
-                else:
-                    # пропускаем некорректные элементы, чтобы не падать
-                    continue
+                    po_item, key, old, new = item
+                    grouped[po_item].append((key, old, new))
 
-            # Если изменений нет — можно пропустить проект или показать пусто.
-            if not normalized:
+            # Если нет валидных изменений - пропускаем проект
+            if not grouped:
                 continue
 
-            rows_html = "".join(fmt_change(*c) for c in normalized)
+            po_blocks = []
+            for po_item in sorted(grouped.keys(), key=lambda x: str(x).lower()):
+                po_changes = grouped[po_item]
+
+                # ограничиваем кол-во отображаемых изменений
+                visible_changes = po_changes[:max_changes_per_po]
+                rows_html = "".join(fmt_change(*c) for c in visible_changes)
+
+                # если есть ещё - добавляем строку
+                if len(po_changes) > max_changes_per_po:
+                    rows_html += fmt_more_row()
+
+                po_blocks.append(f"""
+                <div style="margin-top:12px;">
+                  <div style="font-size:14px; font-weight:700; color:#333; margin-bottom:6px;">
+                    {escape(str(po_item))}
+                  </div>
+                  <table role="presentation" cellpadding="0" cellspacing="0" border="0"
+                         style="width:100%; border:1px solid #eee; border-radius:10px; border-collapse:separate; overflow:hidden;">
+                    {rows_html}
+                  </table>
+                </div>
+                """)
 
             project_blocks.append(f"""
-            <div style="margin-top:14px;">
-              <div style="font-size:15px; font-weight:700; margin-bottom:6px;">
+            <div style="margin-top:16px;">
+              <div style="font-size:15px; font-weight:800; margin-bottom:8px;">
                 {escape(str(project))}
               </div>
-              <table role="presentation" cellpadding="0" cellspacing="0" border="0"
-                     style="width:100%; border:1px solid #eee; border-radius:10px; border-collapse:separate; overflow:hidden;">
-                {rows_html}
-              </table>
+              {''.join(po_blocks)}
             </div>
             """)
 
-        # Если у человека нет блоков — можно вернуть "нет изменений"
         if project_blocks:
             body_part = "".join(project_blocks)
         else:
@@ -116,8 +140,6 @@ def for_content_to_html(for_content: dict, title: str = "Найдены пере
           {body_part}
         </div>
         """)
-
-    blocks_html = "".join(blocks)
 
     html = f"""\
 <!doctype html>
@@ -137,7 +159,7 @@ def for_content_to_html(for_content: dict, title: str = "Найдены пере
           Сформировано: {escape(now)}
         </div>
 
-        {blocks_html}
+        {''.join(blocks)}
 
         <div style="margin-top:18px; font-size:12px; color:#888;">
           Это автоматическое уведомление.
@@ -208,7 +230,7 @@ def fetch_changes():
     for responsible in for_content:
         responsible_mail = ru_person_to_mail(responsible)
 
-        html_body = for_content_to_html({responsible + f"({responsible_mail})": for_content[responsible]})
+        html_body = for_content_to_html({responsible + f" ({responsible_mail})": for_content[responsible]})
 
         send_email_with_html(service, to_email, subject, html_body)
 
@@ -221,7 +243,7 @@ with DAG(
     dag_id=f"schedule_changes",
     default_args=default_args,
     start_date=datetime.datetime(2025, 11, 27, 4, 0, 0, 0),
-    schedule_interval="0 0 * * *",
+    schedule_interval="30 6-15/2 * * mon-fri",
     catchup=False
 ) as dags:
     fetch_changes()
