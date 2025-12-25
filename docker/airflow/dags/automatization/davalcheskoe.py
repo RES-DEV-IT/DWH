@@ -1,7 +1,5 @@
 from datetime import datetime, timedelta
-from airflow.decorators import task
-from airflow.providers.postgres.hooks.postgres import PostgresHook
-from airflow.operators.bash import BashOperator
+# from airflow.decorators import task
 from airflow import DAG
 from pyairtable import Table, Api
 import re
@@ -12,7 +10,7 @@ import openpyxl
 from openpyxl.utils import get_column_letter
 from openpyxl import load_workbook
 from openpyxl.styles import Font, Alignment, Border, Side
-from send_file_by_mail import create_service, send_email_with_excel
+from src.send_file_by_mail import create_service, send_email_with_excel
 
 
 CRON_EXP = None
@@ -295,6 +293,8 @@ def start_text(sheet, constants):
     manuf_en = constants["manuf_en"]
     period_ru = constants["period_ru"]
     period_en = constants["period_en"]
+    date_of_po_rev = constants["date_of_po_rev"]
+    num_of_po_rev  = constants["num_of_po_rev"]
 
 
     title = "Отчет об использовании давальческого сырья (материалов) / Report on the Use of Customer Supplied Equipment (materials)"
@@ -302,8 +302,8 @@ def start_text(sheet, constants):
     # main_text = f"""Общество с ограниченной ответственностью {manuf_ru} (далее - Переработчик) для выполнения работ по Дополнительному соглашению {additional_agreement_no} к Рамочному договору {general_contract_ru}, составило настоящий отчет об использовании материалов (далее - Отчет), переданных обществом с ограниченной ответственностью «РЭС Инжиниринг» в лице Генерального директора Тихонова Сергея Сергеевича, действующего на основании Устава в редакции от «12» мая 2022 года, далее именуемое «Давалец» о том, что: /
     # Dembla Valves Limited Company represented by J.N. Dembla (hereinafter referred to as the Processor), hereinafter referred to as the Supplying Customer to perform works under Supplementary Agreement {additional_agreement_no} to {general_contract_ru}, has drawn up this report on the use of equipment (hereinafter referred to as the "Report") handed over to RES Engineering Limited Liability Company represented by Sergey Tikhonov, General Director, acting on the basis of the Charter as amended on May 12, 2022, indicating that:"""
     
-    main_text = f"""Общество с ограниченной ответственностью {manuf_ru} (далее - Переработчик) для выполнения работ по Дополнительному соглашению {additional_agreement_no} к Рамочному договору {general_contract}, {pono}, составило настоящий отчет об использовании материалов (далее - Отчет), переданных обществом с ограниченной ответственностью «РЭС Инжиниринг» в лице Генерального директора Тихонова Сергея Сергеевича, действующего на основании Устава в редакции от «12» мая 2022 года, далее именуемое «Давалец» о том, что: /
-    {manuf_en} (hereinafter referred to as the "Processor"), for the purpose of performing the work under the Supplementary Agreement {additional_agreement_no} to the {general_contract}, {pono}, has prepared this Materials Usage Report (hereinafter referred to as the "Report"). The Report relates to materials transferred by the Limited Liability Company "RES Engineering," represented by General Director Sergey Sergeevich Tikhonov, acting on the basis of the Charter, as amended on May 12, 2022. The Report"""
+    main_text = f"""Общество с ограниченной ответственностью {manuf_ru} (далее - Переработчик) для выполнения работ по Дополнительному соглашению {additional_agreement_no} к Рамочному договору {general_contract}, {pono} рев.{num_of_po_rev} от {date_of_po_rev}, составило настоящий отчет об использовании материалов (далее - Отчет), переданных обществом с ограниченной ответственностью «РЭС Инжиниринг» в лице Генерального директора Тихонова Сергея Сергеевича, действующего на основании Устава в редакции от «12» мая 2022 года, далее именуемое «Давалец» о том, что: /
+    {manuf_en} (hereinafter referred to as the "Processor"), for the purpose of performing the work under the Supplementary Agreement {additional_agreement_no} to the {general_contract}, {pono} rev.{num_of_po_rev} dated {date_of_po_rev}, has prepared this Materials Usage Report (hereinafter referred to as the "Report"). The Report relates to materials transferred by the Limited Liability Company "RES Engineering," represented by General Director Sergey Sergeevich Tikhonov, acting on the basis of the Charter, as amended on May 12, 2022. The Report"""
     
     first_point_text = "1.	Давалец передал, а Переработчик принял материалы для выполнения работ. / The Supplying Customer has handed over and the Processor has accepted the materials to perform the works."
     second_point_text = f"2.	В период {period_ru} переданные Заказчиком материалы использованы Подрядчиком при выполнении работ, а именно: / In the period {period_en}, the materials handed over by the Customer were used by the Contractor to perform the works, namely:"
@@ -511,10 +511,9 @@ def generate(stage_po, stage_cs, target_kks, head_constants, tail_constants):
         if width > 1:
             sheet.merge_cells(start_row=HEAD_INDEX, start_column=i, end_row=HEAD_INDEX, end_column=i+width-1)
 
-        if sub_cols is not None:
-            if len(sub_cols) != 0: # Если есть дополнительные колонки
-                for shift, sub_col in enumerate(sub_cols):
-                    sheet.cell(HEAD_INDEX+1, i + shift).value = sub_col
+        if len(sub_cols) != 0: # Если есть дополнительные колонки
+            for shift, sub_col in enumerate(sub_cols):
+                sheet.cell(HEAD_INDEX+1, i + shift).value = sub_col
         else: # Если нет дополнительных колонок
             sheet.merge_cells(start_row=HEAD_INDEX, start_column=i, end_row=HEAD_INDEX+1, end_column=i)
 
@@ -611,7 +610,7 @@ def download_file(url, save_path):
         for chunk in response.iter_content(chunk_size=8192):
             print('chunk')
             file.write(chunk)
-@task
+# @task
 def fetch_and_generate():
     autogenerate_table = get_table("Portal", "Portal 2.0.3", "Autogenerated docs")
 
@@ -664,7 +663,7 @@ def fetch_and_generate():
         en_dt2 = convert_date(row["fields"]["End date"], locale="en")
 
         pts_dt = convert_date(row["fields"]["End date"], locale="points")
-
+        
         if "full_manufacturer_name_lookup" in row['fields'] and "director_name_lookup" in row["fields"]:
             manuf_ru = f"«{row['fields']['full_manufacturer_name_lookup']}» в лице {row['fields']['director_name_lookup']}"
             manuf_en = f"{row['fields']['full_manufacturer_name_lookup']} represented by {row['fields']['director_name_lookup']}"
@@ -681,7 +680,9 @@ def fetch_and_generate():
             "general_contract": row["fields"]["GC"],
             "manuf_en": manuf_en,
             "period_ru": f"с {ru_dt1} по {ru_dt2}",
-            "period_en": f"{en_dt1}. and {en_dt2}"
+            "period_en": f"{en_dt1}. and {en_dt2}",
+            "date_of_po_rev": convert_date(row["fields"]["date_of_po_rev"], locale="points"),
+            "num_of_po_rev": row["fields"]["num_of_po_rev"]
         }
         
         tail_constants = {
@@ -710,12 +711,12 @@ def fetch_and_generate():
 
         autogenerate_table.update(record_id, {"Script check": True})
 
-with DAG(
-    dag_id="davalcheskoe",
-    default_args=default_args,
-    start_date=START_DATE,
-    schedule_interval=CRON_EXP,
-    catchup=False
-) as dags:
-    
+# with DAG(
+#     dag_id="davalcheskoe",
+#     default_args=default_args,
+#     start_date=START_DATE,
+#     schedule_interval=CRON_EXP,
+#     catchup=False
+# ) as dags:
+if __name__ == "__main__":    
     fetch_and_generate()

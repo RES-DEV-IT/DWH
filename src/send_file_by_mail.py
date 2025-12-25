@@ -163,7 +163,7 @@ if __name__ == "__main__":
 
     # === SEND TEXT ===
     service = create_service()
-    to_email = "letyagin.a@res-e.ru"
+    to_email = ["letyagin.a@res-e.ru", "a.letyagin1@gmail.com"]
     subject = "test_subject"
     body = "main text"
     send_email_with_text(service, to_email, subject, body)
