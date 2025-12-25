@@ -11,6 +11,7 @@ from send_file_by_mail import create_service, send_email_with_html
 from collections import defaultdict
 from html import escape
 
+
 def build_for_content(records):
     for_content = defaultdict(lambda: defaultdict(list))
     for row in records:
@@ -22,20 +23,16 @@ def build_for_content(records):
         ))
     return for_content
 
-import re
-
-def _slugify(text: str) -> str:
-    """Делаем безопасный id для HTML якоря."""
-    if text is None:
-        return "x"
-    s = str(text).strip().lower()
-    s = re.sub(r"\s+", "-", s)
-    s = re.sub(r"[^a-z0-9а-яё\-_]+", "", s, flags=re.IGNORECASE)
-    if not s:
-        s = "x"
-    return s[:60]  # чтобы id не был огромным
-
 def for_content_to_html(for_content: dict, title: str = "Найдены переносы", max_changes_per_po: int = 5) -> str:
+    """
+    Делает HTML-письмо из структуры:
+    {responsible: {project: [(po_item, key, old, new), ...]}}
+
+    Новое:
+    - Группирует изменения по po_item
+    - Если изменений по po_item > max_changes_per_po: показывает первые N и строку "и все следующие этапы"
+    """
+
     now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
 
     def fmt_change(key, old, new):
@@ -59,7 +56,7 @@ def for_content_to_html(for_content: dict, title: str = "Найдены пере
         """
 
     def fmt_more_row():
-        return """
+        return f"""
         <tr>
           <td style="padding:8px 10px; background:#fafafa; color:#555; font-size:13px;">
             <i>… и все следующие этапы</i>
@@ -75,54 +72,37 @@ def for_content_to_html(for_content: dict, title: str = "Найдены пере
         project_names = sorted(projects.keys(), key=lambda x: str(x).lower())
 
         project_blocks = []
-        project_details_blocks = []
 
-        for idx, project in enumerate(project_names, start=1):
+        for project in project_names:
             changes = projects.get(project, []) or []
 
-            # группировка по po_item
+            # Группируем по po_item
             grouped = defaultdict(list)
             for item in changes:
                 if isinstance(item, (list, tuple)) and len(item) == 4:
                     po_item, key, old, new = item
                     grouped[po_item].append((key, old, new))
 
+            # Если нет валидных изменений - пропускаем проект
             if not grouped:
                 continue
 
-            # уникальные якоря
-            proj_slug = _slugify(project)
-            resp_slug = _slugify(responsible)
-            anchor_top = f"p_{resp_slug}_{proj_slug}_{idx}"
-            anchor_body = f"{anchor_top}_details"
-
-            # Заголовок проекта (компактный)
-            project_blocks.append(f"""
-            <div id="{anchor_top}" style="margin-top:12px; padding:10px 12px; border:1px solid #eee; border-radius:12px;">
-              <div style="display:block; font-size:15px; font-weight:800; margin-bottom:2px;">
-                {escape(str(project))}
-              </div>
-              <div style="font-size:13px; color:#666;">
-                <a href="#{anchor_body}" style="text-decoration:none; font-weight:700;">Показать</a>
-              </div>
-            </div>
-            """)
-
-            # Детали проекта (вынесены вниз, чтобы сверху было коротко)
             po_blocks = []
             for po_item in sorted(grouped.keys(), key=lambda x: str(x).lower()):
                 po_changes = grouped[po_item]
 
+                # ограничиваем кол-во отображаемых изменений
                 visible_changes = po_changes[:max_changes_per_po]
                 rows_html = "".join(fmt_change(*c) for c in visible_changes)
 
+                # если есть ещё - добавляем строку
                 if len(po_changes) > max_changes_per_po:
                     rows_html += fmt_more_row()
 
                 po_blocks.append(f"""
                 <div style="margin-top:12px;">
                   <div style="font-size:14px; font-weight:700; color:#333; margin-bottom:6px;">
-                    {escape(str(po_item))}
+                    item - {escape(str(po_item))}
                   </div>
                   <table role="presentation" cellpadding="0" cellspacing="0" border="0"
                          style="width:100%; border:1px solid #eee; border-radius:10px; border-collapse:separate; overflow:hidden;">
@@ -131,36 +111,17 @@ def for_content_to_html(for_content: dict, title: str = "Найдены пере
                 </div>
                 """)
 
-            project_details_blocks.append(f"""
-            <div id="{anchor_body}" style="margin-top:18px; padding:14px; border:1px solid #ddd; border-radius:14px; background:#fff;">
-              <div style="font-size:16px; font-weight:900; margin-bottom:6px;">
+            project_blocks.append(f"""
+            <div style="margin-top:16px;">
+              <div style="font-size:15px; font-weight:800; margin-bottom:8px;">
                 {escape(str(project))}
               </div>
-
-              <div style="font-size:13px; color:#666; margin-bottom:10px;">
-                <a href="#{anchor_top}" style="text-decoration:none; font-weight:700;">Скрыть</a>
-              </div>
-
               {''.join(po_blocks)}
-
-              <div style="margin-top:12px; font-size:13px; color:#666;">
-                <a href="#{anchor_top}" style="text-decoration:none; font-weight:700;">↑ Скрыть и вернуться к списку проектов</a>
-              </div>
             </div>
             """)
 
         if project_blocks:
-            body_part = f"""
-            <div style="margin-top:10px;">
-              <div style="font-size:13px; color:#777; margin-bottom:8px;">
-                Нажмите <b>Показать</b> у нужного проекта — детали откроются ниже.
-              </div>
-              {''.join(project_blocks)}
-              <div style="margin-top:22px;">
-                {''.join(project_details_blocks)}
-              </div>
-            </div>
-            """
+            body_part = "".join(project_blocks)
         else:
             body_part = """
             <div style="margin-top:10px; color:#666; font-size:14px;">
@@ -206,7 +167,6 @@ def for_content_to_html(for_content: dict, title: str = "Найдены пере
 </html>
 """
     return html
-
 
 def ru_person_to_mail(ru_person):
     person_to_mail = {
