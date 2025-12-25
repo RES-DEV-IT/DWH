@@ -22,20 +22,8 @@ def build_for_content(records):
         ))
     return for_content
 
-from html import escape
-from collections import defaultdict
-
 def for_content_to_html(for_content: dict, title: str = "Найдены переносы", max_changes_per_po: int = 5) -> str:
-    """
-    Делает HTML-письмо из структуры:
-    {responsible: {project: [(po_item, key, old, new), ...]}}
-
-    Новое:
-    - Группирует изменения по po_item
-    - Если изменений по po_item > max_changes_per_po: показывает первые N и строку "и все следующие этапы"
-    """
-
-    now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
+    now = datetime.now().strftime("%Y-%m-%d %H:%M")
 
     def fmt_change(key, old, new):
         key = "" if key is None else str(key)
@@ -58,7 +46,7 @@ def for_content_to_html(for_content: dict, title: str = "Найдены пере
         """
 
     def fmt_more_row():
-        return f"""
+        return """
         <tr>
           <td style="padding:8px 10px; background:#fafafa; color:#555; font-size:13px;">
             <i>… и все следующие этапы</i>
@@ -78,14 +66,12 @@ def for_content_to_html(for_content: dict, title: str = "Найдены пере
         for project in project_names:
             changes = projects.get(project, []) or []
 
-            # Группируем по po_item
             grouped = defaultdict(list)
             for item in changes:
                 if isinstance(item, (list, tuple)) and len(item) == 4:
                     po_item, key, old, new = item
                     grouped[po_item].append((key, old, new))
 
-            # Если нет валидных изменений - пропускаем проект
             if not grouped:
                 continue
 
@@ -93,18 +79,16 @@ def for_content_to_html(for_content: dict, title: str = "Найдены пере
             for po_item in sorted(grouped.keys(), key=lambda x: str(x).lower()):
                 po_changes = grouped[po_item]
 
-                # ограничиваем кол-во отображаемых изменений
                 visible_changes = po_changes[:max_changes_per_po]
                 rows_html = "".join(fmt_change(*c) for c in visible_changes)
 
-                # если есть ещё - добавляем строку
                 if len(po_changes) > max_changes_per_po:
                     rows_html += fmt_more_row()
 
                 po_blocks.append(f"""
                 <div style="margin-top:12px;">
                   <div style="font-size:14px; font-weight:700; color:#333; margin-bottom:6px;">
-                    item - {escape(str(po_item))}
+                    {escape(str(po_item))}
                   </div>
                   <table role="presentation" cellpadding="0" cellspacing="0" border="0"
                          style="width:100%; border:1px solid #eee; border-radius:10px; border-collapse:separate; overflow:hidden;">
@@ -113,13 +97,16 @@ def for_content_to_html(for_content: dict, title: str = "Найдены пере
                 </div>
                 """)
 
+            # ✅ Проект теперь сворачиваемый
             project_blocks.append(f"""
-            <div style="margin-top:16px;">
-              <div style="font-size:15px; font-weight:800; margin-bottom:8px;">
+            <details style="margin-top:16px; border:1px solid #eee; border-radius:12px; padding:10px; background:#fff;">
+              <summary style="cursor:pointer; font-size:15px; font-weight:800; outline:none;">
                 {escape(str(project))}
+              </summary>
+              <div style="margin-top:10px;">
+                {''.join(po_blocks)}
               </div>
-              {''.join(po_blocks)}
-            </div>
+            </details>
             """)
 
         if project_blocks:
@@ -169,6 +156,7 @@ def for_content_to_html(for_content: dict, title: str = "Найдены пере
 </html>
 """
     return html
+
 
 def ru_person_to_mail(ru_person):
     person_to_mail = {
@@ -224,7 +212,7 @@ def fetch_changes():
     for_content = build_for_content(records=records)
     
     service = create_service()
-    to_email = ["letyagin.a@res-e.ru", "meyendorff@res-e.ru"]
+    to_email = ["letyagin.a@res-e.ru"]#, "meyendorff@res-e.ru"]
     subject = "Переносы в графиках"
     
     for responsible in for_content:
