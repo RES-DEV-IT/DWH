@@ -199,6 +199,7 @@ def fetch_changes():
         on s.project = pr.project
         where try_parse_date(old_value) is not null
           and try_parse_date(current_value) is not null
+          and try_parse_date(old_value) != try_parse_date(current_value)
     """)
 
     cursor.close()
