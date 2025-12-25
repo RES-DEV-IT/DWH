@@ -22,6 +22,19 @@ def build_for_content(records):
         ))
     return for_content
 
+import re
+
+def _slugify(text: str) -> str:
+    """Делаем безопасный id для HTML якоря."""
+    if text is None:
+        return "x"
+    s = str(text).strip().lower()
+    s = re.sub(r"\s+", "-", s)
+    s = re.sub(r"[^a-z0-9а-яё\-_]+", "", s, flags=re.IGNORECASE)
+    if not s:
+        s = "x"
+    return s[:60]  # чтобы id не был огромным
+
 def for_content_to_html(for_content: dict, title: str = "Найдены переносы", max_changes_per_po: int = 5) -> str:
     now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
 
@@ -62,10 +75,12 @@ def for_content_to_html(for_content: dict, title: str = "Найдены пере
         project_names = sorted(projects.keys(), key=lambda x: str(x).lower())
 
         project_blocks = []
+        project_details_blocks = []
 
-        for project in project_names:
+        for idx, project in enumerate(project_names, start=1):
             changes = projects.get(project, []) or []
 
+            # группировка по po_item
             grouped = defaultdict(list)
             for item in changes:
                 if isinstance(item, (list, tuple)) and len(item) == 4:
@@ -75,6 +90,25 @@ def for_content_to_html(for_content: dict, title: str = "Найдены пере
             if not grouped:
                 continue
 
+            # уникальные якоря
+            proj_slug = _slugify(project)
+            resp_slug = _slugify(responsible)
+            anchor_top = f"p_{resp_slug}_{proj_slug}_{idx}"
+            anchor_body = f"{anchor_top}_details"
+
+            # Заголовок проекта (компактный)
+            project_blocks.append(f"""
+            <div id="{anchor_top}" style="margin-top:12px; padding:10px 12px; border:1px solid #eee; border-radius:12px;">
+              <div style="display:block; font-size:15px; font-weight:800; margin-bottom:2px;">
+                {escape(str(project))}
+              </div>
+              <div style="font-size:13px; color:#666;">
+                <a href="#{anchor_body}" style="text-decoration:none; font-weight:700;">Показать</a>
+              </div>
+            </div>
+            """)
+
+            # Детали проекта (вынесены вниз, чтобы сверху было коротко)
             po_blocks = []
             for po_item in sorted(grouped.keys(), key=lambda x: str(x).lower()):
                 po_changes = grouped[po_item]
@@ -97,20 +131,36 @@ def for_content_to_html(for_content: dict, title: str = "Найдены пере
                 </div>
                 """)
 
-            # ✅ Проект теперь сворачиваемый
-            project_blocks.append(f"""
-            <details style="margin-top:16px; border:1px solid #eee; border-radius:12px; padding:10px; background:#fff;">
-              <summary style="cursor:pointer; font-size:15px; font-weight:800; outline:none;">
+            project_details_blocks.append(f"""
+            <div id="{anchor_body}" style="margin-top:18px; padding:14px; border:1px solid #ddd; border-radius:14px; background:#fff;">
+              <div style="font-size:16px; font-weight:900; margin-bottom:6px;">
                 {escape(str(project))}
-              </summary>
-              <div style="margin-top:10px;">
-                {''.join(po_blocks)}
               </div>
-            </details>
+
+              <div style="font-size:13px; color:#666; margin-bottom:10px;">
+                <a href="#{anchor_top}" style="text-decoration:none; font-weight:700;">Скрыть</a>
+              </div>
+
+              {''.join(po_blocks)}
+
+              <div style="margin-top:12px; font-size:13px; color:#666;">
+                <a href="#{anchor_top}" style="text-decoration:none; font-weight:700;">↑ Скрыть и вернуться к списку проектов</a>
+              </div>
+            </div>
             """)
 
         if project_blocks:
-            body_part = "".join(project_blocks)
+            body_part = f"""
+            <div style="margin-top:10px;">
+              <div style="font-size:13px; color:#777; margin-bottom:8px;">
+                Нажмите <b>Показать</b> у нужного проекта — детали откроются ниже.
+              </div>
+              {''.join(project_blocks)}
+              <div style="margin-top:22px;">
+                {''.join(project_details_blocks)}
+              </div>
+            </div>
+            """
         else:
             body_part = """
             <div style="margin-top:10px; color:#666; font-size:14px;">
