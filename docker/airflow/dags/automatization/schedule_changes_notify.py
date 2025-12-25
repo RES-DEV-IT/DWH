@@ -23,7 +23,6 @@ def build_for_content(records):
     return for_content
 
 from html import escape
-from datetime import datetime
 from collections import defaultdict
 
 def for_content_to_html(for_content: dict, title: str = "Найдены переносы", max_changes_per_po: int = 5) -> str:
@@ -36,7 +35,7 @@ def for_content_to_html(for_content: dict, title: str = "Найдены пере
     - Если изменений по po_item > max_changes_per_po: показывает первые N и строку "и все следующие этапы"
     """
 
-    now = datetime.now().strftime("%Y-%m-%d %H:%M")
+    now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
 
     def fmt_change(key, old, new):
         key = "" if key is None else str(key)
