@@ -23,7 +23,7 @@ def build_for_content(records):
     return for_content
 
 def for_content_to_html(for_content: dict, title: str = "Найдены переносы", max_changes_per_po: int = 5) -> str:
-    now = datetime.now().strftime("%Y-%m-%d %H:%M")
+    now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
 
     def fmt_change(key, old, new):
         key = "" if key is None else str(key)
