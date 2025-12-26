@@ -191,7 +191,13 @@ def fetch_changes():
     cursor = conn.cursor()
 
     records = hook.get_records("""
-        select s.project, po_item, key, try_parse_date(old_value), try_parse_date(current_value), responsible
+        select
+            concat(s.project, ' - ', _manuf) as project,
+            po_item,
+            key,
+            try_parse_date(old_value),
+            try_parse_date(current_value),
+            responsible
         from schedules_changes as s
         left join project_responsible as pr
         on s.project = pr.project
