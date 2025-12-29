@@ -204,6 +204,7 @@ def fetch_changes():
         where try_parse_date(old_value) is not null
           and try_parse_date(current_value) is not null
           and try_parse_date(old_value) != try_parse_date(current_value)
+          and try_parse_date(current_value) > try_parse_date(old_value)
     """)
 
     cursor.close()
