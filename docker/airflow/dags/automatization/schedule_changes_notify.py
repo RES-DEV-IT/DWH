@@ -193,8 +193,8 @@ def fetch_changes():
     records = hook.get_records("""
         select
             concat(s.project, ' - ', _manuf) as project,
-            po_item,
-            ps.process_ru,
+            replace(po_item, ',', '.'),
+            ps.stage_name_ru,
             try_parse_date(old_value),
             try_parse_date(current_value),
             responsible
