@@ -194,13 +194,13 @@ def fetch_changes():
         select
             concat(s.project, ' - ', _manuf) as project,
             po_item,
-            key,
+            ps.process_ru,
             try_parse_date(old_value),
             try_parse_date(current_value),
             responsible
         from schedules_changes as s
-        left join project_responsible as pr
-        on s.project = pr.project
+        inner join project_responsible as pr on s.project = pr.project
+        inner join gold.project_stages as ps on s.key = ps.stage_name
         where try_parse_date(old_value) is not null
           and try_parse_date(current_value) is not null
           and try_parse_date(old_value) != try_parse_date(current_value)

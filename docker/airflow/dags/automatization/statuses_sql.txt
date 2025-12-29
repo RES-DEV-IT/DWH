@@ -1,0 +1,173 @@
+
+CREATE OR REPLACE FUNCTION get_process_status(step1_color TEXT, step2_color TEXT)
+RETURNS TEXT AS $$
+BEGIN
+    -- Приводим значения к нижнему регистру
+    step1_color := LOWER(TRIM(step1_color));
+    step2_color := LOWER(TRIM(step2_color));
+    
+    RETURN CASE 
+        WHEN step1_color = 'green' AND step2_color = 'green' THEN 'finished'
+        WHEN step1_color = 'green' AND step2_color IN ('white', 'yellow') THEN 'in_process'
+        --WHEN step1_color = 'gray' AND step2_color = 'gray' THEN 'NA'
+        ELSE NULL
+    END;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION rgb_to_color(rgb TEXT)
+RETURNS TEXT AS $$
+BEGIN
+    -- Приводим значения к нижнему регистру
+    rgb := LOWER(TRIM(rgb));
+    
+    RETURN CASE 
+        WHEN rgb = '(255, 255, 255)' THEN 'white'
+        WHEN rgb = '(147, 196, 125)' THEN 'green'
+        WHEN rgb = '(153, 153, 153)' THEN 'gray'
+		WHEN rgb = '(255, 255, 0)'   THEN 'yellow'
+        ELSE NULL
+    END;
+END;
+$$ LANGUAGE plpgsql;
+
+with extracted_raw_colors as (
+	select _manuf, _sheet_name,
+		jsonb_array_elements(content) ->> '_row_number' as _row_number,
+		jsonb_array_elements(content) ->> 'patterns_start' as patterns_start,
+		jsonb_array_elements(content) ->> 'patterns_readiness' as patterns_readiness,
+		jsonb_array_elements(content) ->> 'body_pos_with_foundry_forgings_vendor_(date)' as body_po_with_foundry,
+		jsonb_array_elements(content) ->> 'body_body_readiness' as body_readiness,
+		jsonb_array_elements(content) ->> 'qt_basic_parts_start' as qt_basic_parts_start,
+		jsonb_array_elements(content) ->> 'qt_basic_parts_readiness' as qt_basic_parts_readiness_1,
+		jsonb_array_elements(content) ->> 'qt_basic_parts_readiness_(+machining)' as qt_basic_parts_readiness_2,
+		jsonb_array_elements(content) ->> 'other_components_start' as other_components_start,
+		jsonb_array_elements(content) ->> 'other_components_receipt_date' as other_components_receipt_date_1,
+		jsonb_array_elements(content) ->> 'other_components_receipt_date_(+machining)' as other_components_receipt_date_2,
+		jsonb_array_elements(content) ->> 'semi-finish_machining_start' as semi_finish_machining_start,
+		jsonb_array_elements(content) ->> 'semi-finish_machining_completed' as semi_finish_machining_completed,
+		jsonb_array_elements(content) ->> 'overlaying_start' as overlaying_start,
+		jsonb_array_elements(content) ->> 'overlaying_completed' as overlaying_completed,
+		jsonb_array_elements(content) ->> 'finish_machining_start' as finish_machining_start,
+		jsonb_array_elements(content) ->> 'finish_machining_completed' as finish_machining_completed,
+		jsonb_array_elements(content) ->> 'valve_assembly_start' as valve_assembly_start,
+		jsonb_array_elements(content) ->> 'valve_assembly_completed' as valve_assembly_completed,
+		jsonb_array_elements(content) ->> 'assembly_with_actuator_start' as assembly_with_actuator_start,
+		jsonb_array_elements(content) ->> 'assembly_with_actuator_completed' as assembly_with_actuator_completed,
+		jsonb_array_elements(content) ->> 'testing_start' as testing_start,
+		jsonb_array_elements(content) ->> 'testing_completed' as testing_completed,
+		jsonb_array_elements(content) ->> 'readiness_to_res_inspection' as readiness_to_res_inspection,
+		jsonb_array_elements(content) ->> 'res_inspection_passed' as res_inspection_passed,
+		jsonb_array_elements(content) ->> 'tpi_inspection' as tpi_inspection,
+		--
+		jsonb_array_elements(content) ->> 'final_painting' as final_painting,
+		jsonb_array_elements(content) ->> 'packing_inspection_completed' as packing_inspection_completed,
+		jsonb_array_elements(content) ->> 'dispatch_clearance_date' as dispatch_clearance_date,
+		jsonb_array_elements(content) ->> 'shipment_date' as shipment_date
+	from
+	(select *, max(_created_at) over(partition by _manuf, _sheet_name) as max_created_at from stage.schedules_colors) as t1
+	where _created_at = max_created_at
+), extracted_raw_values as (
+	select _manuf, _sheet_name, 
+		jsonb_array_elements(content) ->> '_row_number' as _row_number,
+		jsonb_array_elements(content) ->> 'po_item' as po_item
+	from (select *, max(_created_at) over(partition by _manuf, _sheet_name) as max_created_at from stage.schedules_values) t1
+	where _created_at = max_created_at
+), extracted_raw_joined as (
+	select c.*, v.po_item
+	from extracted_raw_colors c
+	inner join extracted_raw_values v
+	on c._manuf = v._manuf and c._sheet_name = v._sheet_name and c._row_number = v._row_number
+), filtered as (
+	select _manuf, _sheet_name, _row_number, replace(po_item, ',', '.') as po_item,
+		rgb_to_color(patterns_start) as patterns_start,
+		rgb_to_color(patterns_readiness) as patterns_readiness,
+		rgb_to_color(body_po_with_foundry) as body_po_with_foundry,
+		rgb_to_color(body_readiness) as body_readiness,
+		rgb_to_color(qt_basic_parts_start) as qt_basic_parts_start,
+		rgb_to_color(coalesce(
+			qt_basic_parts_readiness_1,
+			qt_basic_parts_readiness_2
+		)) as qt_basic_parts_readiness,
+		rgb_to_color(other_components_start) as other_components_start,
+		rgb_to_color(coalesce(
+			other_components_receipt_date_1,
+			other_components_receipt_date_2
+		)) as other_components_receipt_date,
+		rgb_to_color(semi_finish_machining_start) as semi_finish_machining_start,
+		rgb_to_color(semi_finish_machining_completed) as semi_finish_machining_completed,
+		rgb_to_color(overlaying_start) as overlaying_start,
+		rgb_to_color(overlaying_completed) as overlaying_completed,
+		rgb_to_color(finish_machining_start) as finish_machining_start,
+		rgb_to_color(finish_machining_completed) as finish_machining_completed,
+		rgb_to_color(valve_assembly_start) as valve_assembly_start,
+		rgb_to_color(valve_assembly_completed) as valve_assembly_completed,
+		rgb_to_color(assembly_with_actuator_start) as assembly_with_actuator_start,
+		rgb_to_color(assembly_with_actuator_completed) as assembly_with_actuator_completed,
+		rgb_to_color(testing_start) as testing_start,
+		rgb_to_color(testing_completed) as testing_completed,
+		rgb_to_color(readiness_to_res_inspection) as readiness_to_res_inspection,
+		rgb_to_color(res_inspection_passed) as res_inspection_passed,
+		rgb_to_color(tpi_inspection) as tpi_inspection,
+		--
+		rgb_to_color(final_painting) as final_painting,
+		rgb_to_color(packing_inspection_completed) as packing_inspection_completed,
+		rgb_to_color(dispatch_clearance_date) as dispatch_clearance_date,
+		rgb_to_color(shipment_date) as shipment_date
+	from extracted_raw_joined
+), status_array_table as (
+	select _manuf, _sheet_name, _row_number, po_item,
+		array[
+			get_process_status(patterns_start, patterns_readiness),
+			get_process_status(body_po_with_foundry, body_readiness),
+			get_process_status(qt_basic_parts_start, qt_basic_parts_readiness),
+			get_process_status(other_components_start, other_components_receipt_date),
+			get_process_status(semi_finish_machining_start, semi_finish_machining_completed),
+			get_process_status(overlaying_start, overlaying_completed),
+			get_process_status(finish_machining_start, finish_machining_completed),
+			get_process_status(valve_assembly_start, valve_assembly_completed),
+			get_process_status(assembly_with_actuator_start, assembly_with_actuator_completed),
+			get_process_status(testing_start, testing_completed),
+			get_process_status(readiness_to_res_inspection, res_inspection_passed),
+			get_process_status(res_inspection_passed, tpi_inspection),
+			get_process_status(tpi_inspection, final_painting),
+			get_process_status(final_painting, packing_inspection_completed),
+			get_process_status(packing_inspection_completed, dispatch_clearance_date),
+			get_process_status(dispatch_clearance_date, shipment_date)
+		] as status_array,
+		array[
+			'PATTERNS',
+			'BODY',
+			'QT_BASIC_PARTS',
+			'OTHER_COMPONENTS',
+			'SEMI_FINISH_MACHINING_START',
+			'OVERLAYING',
+			'FINISH_MACHINING',
+			'VALVE_ASSEMBLY',
+			'ASSEMBLY_WITH_ACTUATOR',
+			'TESING',
+			'RES_INSPECTION',
+			'TPI_INSPECTION',
+			'PAINTING',
+			'PACKING',
+			'DISPATCH',
+			'SHIPMENT'
+		] as names_array
+	from filtered
+)
+select _manuf, _sheet_name, _row_number, po_item,
+	(
+        SELECT elem
+        FROM unnest(status_array, names_array) WITH ORDINALITY AS t(elem, name, idx)
+        WHERE elem IS NOT NULL
+        ORDER BY idx DESC
+        LIMIT 1
+    ) as current_status,
+    (
+        SELECT name
+        FROM unnest(status_array, names_array) WITH ORDINALITY AS t(elem, name, idx)
+        WHERE elem IS NOT NULL
+        ORDER BY idx DESC
+        LIMIT 1
+    ) as current_process
+from status_array_table
