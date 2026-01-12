@@ -3,6 +3,7 @@ from google.oauth2.service_account import Credentials
 import numpy as np
 import re
 import yaml
+import time
 
 
 PATH_TO_CONFIG = "/".join(__file__.replace("\\", "/").split("/")[:-2]) + "/CONFIG.yaml"
@@ -63,6 +64,8 @@ class DownloadSchedule:
                     ranges=[f"'{sheet_name}'!A1:{num_columns_letter}{num_rows}"],
                     fields='sheets(data(rowData(values(userEnteredFormat,formattedValue))))'
                 ).execute()
+
+                time.sleep(0.5) # Вызываем небольшую задержку, чтобы не ловить rate limit на скачку листов
 
         
                 pono_row_idx = None
