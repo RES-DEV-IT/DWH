@@ -65,7 +65,8 @@ class DownloadSchedule:
                     fields='sheets(data(rowData(values(userEnteredFormat,formattedValue))))'
                 ).execute()
 
-                time.sleep(0.5) # Вызываем небольшую задержку, чтобы не ловить rate limit на скачку листов
+                print("SLEEP 1 sec.")
+                time.sleep(1) # Вызываем небольшую задержку, чтобы не ловить rate limit на скачку листов
 
         
                 pono_row_idx = None
