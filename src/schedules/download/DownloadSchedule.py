@@ -67,7 +67,6 @@ class DownloadSchedule:
 
                 print("SLEEP 1 sec.")
                 time.sleep(1) # Вызываем небольшую задержку, чтобы не ловить rate limit на скачку листов
-
         
                 pono_row_idx = None
                 for i, row in enumerate(values_result["values"]):

@@ -229,7 +229,7 @@ def fetch_changes():
     for_content = build_for_content(records=records)
     
     service = create_service()
-    to_email = ["letyagin.a@res-e.ru", "meyendorff@res-e.ru"]
+    # to_email = ["letyagin.a@res-e.ru", "meyendorff@res-e.ru"]
     subject = "Переносы в графиках"
     
     for responsible in for_content:
@@ -237,6 +237,8 @@ def fetch_changes():
 
         html_body = for_content_to_html({responsible + f" ({responsible_mail})": for_content[responsible]})
 
+        to_email = ["letyagin.a@res-e.ru", "meyendorff@res-e.ru", responsible_mail]
+        
         send_email_with_html(service, to_email, subject, html_body)
 
 default_args = {
