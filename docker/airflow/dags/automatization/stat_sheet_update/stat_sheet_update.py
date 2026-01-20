@@ -56,7 +56,7 @@ def main_task():
     for manuf in df["manuf"].unique():
         if manuf == "RKC":
             manuf_records = df[df["manuf"] == manuf]
-            data_to_insert = manuf_records[["sheet_name", "last_update_time"]].to_list()
+            data_to_insert = manuf_records[["sheet_name", "last_update_time"]].tolist()
 
             stat_sheet = client.open_by_url(urls[manuf]).worksheet("Stat")
 
