@@ -13,7 +13,7 @@ SHEET_UPDATE_QUERY = """
 SELECT
     _manuf,
     _sheet_name,
-    TO_CHAR(_created_at, 'DD.MM.YYYY') AS last_update_time
+    TO_CHAR(MAX(_created_at), 'DD.MM.YYYY') AS last_update_time
 FROM (
     SELECT
         _created_at,
