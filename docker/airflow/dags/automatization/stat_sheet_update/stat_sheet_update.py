@@ -54,7 +54,7 @@ def main_task():
         urls = yaml.safe_load(file)["URLS"]
     
     for manuf in df["manuf"].unique():
-        if manuf == "RKC":
+        if manuf in ["DelVal", "Dembal", "EHO", "HawaTubes", "LC", "Nirmal", "RKC"]:
             manuf_records = df[df["manuf"] == manuf]
             data_to_insert = manuf_records[["sheet_name", "last_update_time"]].values.tolist()
 
