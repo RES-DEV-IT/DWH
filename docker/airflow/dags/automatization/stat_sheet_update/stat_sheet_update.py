@@ -21,7 +21,7 @@ FROM (
         _sheet_name,
         content,
         LAG(content) OVER(PARTITION BY _manuf, _sheet_name ORDER BY _created_at) AS prev_content
-    FROM stage.schedule_changes
+    FROM stage.schedules_values
 ) AS t1
 WHERE content != prev_content
 GROUP BY _manuf, _sheet_name
