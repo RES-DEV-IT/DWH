@@ -54,23 +54,24 @@ def main_task():
         urls = yaml.safe_load(file)["URLS"]
     
     for manuf in df["manuf"].unique():
-        manuf_records = df[df["manuf"] == manuf]
-        data_to_insert = manuf_records[["sheet_name", "last_update_time"]].to_list()
+        if manuf == "RKC":
+            manuf_records = df[df["manuf"] == manuf]
+            data_to_insert = manuf_records[["sheet_name", "last_update_time"]].to_list()
 
-        stat_sheet = client.open_by_url(urls[manuf]).worksheet("Stat")
+            stat_sheet = client.open_by_url(urls[manuf]).worksheet("Stat")
 
-        row_start = 2
-        col_start = 1
+            row_start = 2
+            col_start = 1
 
-        stat_sheet.batch_clear([
-            f"R{row_start}C{col_start}:R{row_start + len(data_to_insert) - 1}C{col_start + len(data_to_insert[0]) - 1}"
-        ])
+            stat_sheet.batch_clear([
+                f"R{row_start}C{col_start}:R{row_start + len(data_to_insert) - 1}C{col_start + len(data_to_insert[0]) - 1}"
+            ])
 
-        stat_sheet.update(
-            f"R{row_start}C{col_start}:R{row_start + len(data_to_insert) - 1}C{col_start + len(data_to_insert[0]) - 1}",
-            data_to_insert,
-            raw=False
-        )
+            stat_sheet.update(
+                f"R{row_start}C{col_start}:R{row_start + len(data_to_insert) - 1}C{col_start + len(data_to_insert[0]) - 1}",
+                data_to_insert,
+                raw=False
+            )
 
 CRON_EXP = "0 7-16/2 * * mon-fri"
 START_DATE = datetime(2025, 11, 27, 4, 0, 0, 0)
