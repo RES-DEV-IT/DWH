@@ -64,7 +64,7 @@ def main_task():
             col_start = 1
 
             stat_sheet.batch_clear([
-                f"R{row_start}C{col_start}:R{row_start + len(data_to_insert) - 1}C{col_start + len(data_to_insert[0]) - 1}"
+                f"R{row_start}C{col_start}:R{row_start + 1000}C{col_start + 1}"
             ])
 
             stat_sheet.update(
