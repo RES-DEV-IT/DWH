@@ -1,6 +1,20 @@
 import numpy as np
 from typing import Tuple
+import re
 
+
+def normalize_string(s: str) -> str:
+    # 1) Оставляем только латиницу, цифры и пробелы
+    s = re.sub(r'[^A-Za-z0-9 ]+', '', s)
+
+    # 2) Сжимаем последовательности пробелов в один пробел
+    s = re.sub(r'\s+', ' ', s).strip()
+
+    # 3) Меняем пробелы на подчёркивания
+    s = s.replace(' ', '_')
+
+    # 4) В нижний регистр
+    return s.lower()
 
 def parse(sheet, theme_colors, colors, existing_components):
     print("ProjectSheet parsing", sheet.title)
@@ -63,7 +77,7 @@ def parse(sheet, theme_colors, colors, existing_components):
 
     pg_columns_names = []
     for column_name in columns_names:
-        column_name = column_name.lower().replace("/", "").replace(".", "")
+        column_name = normalize_string(column_name)
         column_name = '_'.join(column_name.split())
         pg_columns_names.append(column_name)
     
