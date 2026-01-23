@@ -4,6 +4,7 @@ from airflow.providers.postgres.hooks.postgres import PostgresHook
 from airflow.decorators import task
 from airflow import DAG
 import datetime
+import pandas as pd
 
 
 # API TOKENS
@@ -45,14 +46,19 @@ def fetch_projects_table():
         user_locale="ru"  # Укажите вашу локаль
     )
 
-    data_to_insert = []
+    data = []
 
     for row in rows:
-        data_to_insert.append({
-            "_created_at": _created_at,
+        data.append({
             "id": row["id"],
             "content": row["fields"]
         })
+
+    df = pd.DataFrame(data)
+    data_to_insert = [(
+        _created_at,
+        df.to_json(orient='records', date_format='iso')
+    )]
 
     # Загружаем данные в PG
     hook = PostgresHook(postgres_conn_id="resdb_connection")
@@ -62,8 +68,8 @@ def fetch_projects_table():
 
     # SQL запрос для вставки
     insert_query = f"""
-    INSERT INTO stage.portal_projects (_created_at, id, content)
-    VALUES (%s, %s, %s)
+    INSERT INTO stage.portal_projects (_created_at, content)
+    VALUES (%s, %s)
     """
     
     # Массовая вставка
