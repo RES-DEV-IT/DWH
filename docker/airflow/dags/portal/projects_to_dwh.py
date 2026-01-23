@@ -35,10 +35,11 @@ def get_table(
 
 @task
 def fetch_projects_table():
-    projects_table = get_table("Portal", "Portal 2.0.3", "Projects")
+    _created_at = datetime.datetime.now()
+    projects_table = get_table("Portal", "Portal 2.0.4", "Projects")
     
     rows = projects_table.all(
-        fields=["PO No.", "Manufacturer"],
+        # fields=["PO No.", "Manufacturer"],
         cell_format="string",
         time_zone="Europe/Moscow",  # Укажите ваш часовой пояс
         user_locale="ru"  # Укажите вашу локаль
@@ -47,25 +48,22 @@ def fetch_projects_table():
     data_to_insert = []
 
     for row in rows:
-        if "PO No." in row["fields"] and "Manufacturer" in row["fields"]:
-            data_to_insert.append((
-                row["fields"]["PO No."],
-                row["fields"]["Manufacturer"]
-            ))
+        data_to_insert.append({
+            "_created_at": _created_at,
+            "id": row["id"],
+            "content": row["fields"]
+        })
 
     # Загружаем данные в PG
     hook = PostgresHook(postgres_conn_id="resdb_connection")
     
     conn = hook.get_conn()
     cursor = conn.cursor()
-    
-    cursor.execute("TRUNCATE TABLE portal.projects")
-    conn.commit()
 
     # SQL запрос для вставки
     insert_query = f"""
-    INSERT INTO portal.projects (pono, manuf)
-    VALUES (%s, %s)
+    INSERT INTO stage.portal_projects (_created_at, id, content)
+    VALUES (%s, %s, %s)
     """
     
     # Массовая вставка
