@@ -21,9 +21,12 @@ class DownloadSchedule:
         with open(PATH_TO_CONFIG) as stream:
             self.__config = yaml.safe_load(stream)
 
-    def is_project_sheet(self, sheet_name: str) -> bool:
+    def is_project_sheet(self, sheet_name: str, manuf_name: str) -> bool:
         """Является ли имя листа проектом"""
-        return re.match(r'^P\d+.*', sheet_name)
+        if manuf_name == "Jsons":
+            return "orders" in sheet_name
+        else:
+            return re.match(r'^P\d+.*', sheet_name)
 
     def download_by_manuf_name(self, manuf_name: str):
         assert type(manuf_name) is str, "Manufacturer name should be in string format"
@@ -39,10 +42,12 @@ class DownloadSchedule:
         sheets = spreadsheet_info['sheets']
         visible_sheets = [sheet['properties']['title'] for sheet in sheets if sheet['properties'].get('hidden') != True]
 
+        print("SHEETS", visible_sheets)
+
         result = {}
 
         for sheet_name in visible_sheets:
-            if self.is_project_sheet(sheet_name=sheet_name):
+            if self.is_project_sheet(sheet_name=sheet_name, manuf_name=manuf_name):
                 print(sheet_name)
 
                 # Получаем значения на листе
@@ -70,7 +75,9 @@ class DownloadSchedule:
         
                 pono_row_idx = None
                 for i, row in enumerate(values_result["values"]):
-                    if 'PO No.' in row:
+                    if "RES PO" in row and manuf_name == "Jsons":
+                        pono_row_idx = i
+                    elif 'PO No.' in row:
                         pono_row_idx = i
 
                 assert pono_row_idx is not None, "Cant find PO No. in rows"
@@ -188,4 +195,6 @@ class DownloadSchedule:
 
 if __name__ == "__main__":
     ds = DownloadSchedule()
-    ds.download_by_manuf_name(manuf_name="DelVal")
+    result = ds.download_by_manuf_name(manuf_name="Jsons")
+
+    print(result)

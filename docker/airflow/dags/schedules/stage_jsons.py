@@ -11,7 +11,7 @@ import shutil
 
 
 MANUF_NAME = "Jsons"
-CRON_EXP = "18 6-15/2 * * mon-fri"
+CRON_EXP = "21 6-15/2 * * mon-fri"
 START_DATE = datetime(2025, 11, 27, 4, 0, 0, 0)
 
 default_args = {
