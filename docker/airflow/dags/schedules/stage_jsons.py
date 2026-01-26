@@ -38,7 +38,7 @@ def download_and_insert():
 
         # Работаем со значениями
         values_df = pd.DataFrame(v, columns=c)
-        values_df = stage_transformer.kks(values_df)
+        # values_df = stage_transformer.kks(values_df)
         values_df = stage_transformer.row_number(values_df)
         values_to_insert.append((
             _created_at,
