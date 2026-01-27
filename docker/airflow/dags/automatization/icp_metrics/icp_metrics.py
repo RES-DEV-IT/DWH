@@ -9,6 +9,7 @@ import base64
 from io import BytesIO
 from email.message import EmailMessage
 from send_file_by_mail import create_service
+from typing import List, Dict
 
 
 def kks_vs_qty(hook):
@@ -89,7 +90,7 @@ def build_dfs_meta(dfs, titles):
             })
     return dfs_meta
 
-def build_html_summary(dfs_meta: list[dict]) -> str:
+def build_html_summary(dfs_meta: List[Dict]) -> str:
     """
     dfs_meta: [{"title": "...", "rows": 123, "cols": 5, "columns": [...]}]
     """
@@ -131,7 +132,7 @@ def build_html_summary(dfs_meta: list[dict]) -> str:
       </body>
     </html>
     """
-def dataframes_to_excel_bytes(dfs: dict[str, pd.DataFrame]) -> bytes:
+def dataframes_to_excel_bytes(dfs: Dict[str, pd.DataFrame]) -> bytes:
     """
     dfs: {"SheetName": df, ...}
     Возвращает байты .xlsx файла.
@@ -145,7 +146,7 @@ def dataframes_to_excel_bytes(dfs: dict[str, pd.DataFrame]) -> bytes:
     bio.seek(0)
     return bio.read()
 
-def send_email_with_html_and_excel(service, to_email, subject, dfs: dict[str, pd.DataFrame], excel_filename="metrics.xlsx"):
+def send_email_with_html_and_excel(service, to_email, subject, dfs: Dict[str, pd.DataFrame], excel_filename="metrics.xlsx"):
     """
     dfs: {"Title/SheetName": df, ...}
     """
