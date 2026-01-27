@@ -78,18 +78,6 @@ order by empty_count desc
     } for r in records])
     return df
 
-def build_dfs_meta(dfs, titles):
-    dfs_meta = []
-    for df, title in zip(dfs, titles):
-        if df is not None:
-            dfs_meta.append({
-                "title": title,
-                "rows": len(df),
-                "cols": len(df.columns),
-                "columns": list(dfs.columns)
-            })
-    return dfs_meta
-
 def build_html_summary(dfs_meta: List[Dict]) -> str:
     """
     dfs_meta: [{"title": "...", "rows": 123, "cols": 5, "columns": [...]}]
@@ -132,6 +120,7 @@ def build_html_summary(dfs_meta: List[Dict]) -> str:
       </body>
     </html>
     """
+
 def dataframes_to_excel_bytes(dfs: Dict[str, pd.DataFrame]) -> bytes:
     """
     dfs: {"SheetName": df, ...}
@@ -198,14 +187,14 @@ def main_task():
     
     df1 = kks_vs_qty(hook=hook)
     df2 = empty_in_column(hook=hook)
-    dfs = [df1, df2]
+    dfs = {
+        "KKS vs QTY": df1, 
+        "EMPTY COUNTER": df2
+    }
 
     conn.close()
 
     # === Формируем контент письма ===
-    dfs_meta = build_dfs_meta(dfs=dfs, titles=["KKS vs QTY", "EMPTY COUNTER"])
-    html_summary = build_html_summary(dfs_meta=dfs_meta)
-
     service = create_service()
     send_email_with_html_and_excel(
         service=service,
