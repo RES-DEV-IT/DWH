@@ -51,7 +51,7 @@ def main_task():
     # === Получаем все возможные колонки ===
     unique_columns = set()
     for r in records:
-        unique_columns.update(r.keys())
+        unique_columns.update(r[2].keys())
 
     # === Обновляем колонки в airtable ===
     table = get_table("Portal", "Portal 2.0: Schedules DLC", "MasterSchedule_new")
