@@ -49,7 +49,7 @@ def main_task():
     """)
 
     # === Получаем все возможные колонки ===
-    unique_columns = set()
+    unique_columns = set(["_manuf", "_sheet_name"])
     for r in records:
         unique_columns.update(r[2].keys())
 
@@ -61,6 +61,10 @@ def main_task():
         if unique_column not in existing_columns:
             table.create_field(unique_column, field_type="singleLineText")
 
+    # === Добавляем данные ===
+    at_records = [r[2] for r in records] # extract content from each row
+    table.batch_create(at_records)
+    
 with DAG(
     dag_id="master_schedule",
     default_args={"owner": "Artem", "retries": 0},
