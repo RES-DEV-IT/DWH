@@ -43,7 +43,7 @@ def main_task():
             jsonb_array_elements(content) as content
         FROM (
             SELECT *, MAX(_created_at) OVER(PARTITION BY _manuf, _sheet_name) AS max_created_at
-            FROM stage.schedule_values
+            FROM stage.schedules_values
         ) as t1
         WHERE _created_at = max_created_at        
     """)
