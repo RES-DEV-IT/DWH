@@ -5,7 +5,7 @@ import re
 
 def normalize_string(s: str) -> str:
     # 1) Оставляем только латиницу, цифры и пробелы
-    s = re.sub(r'[^A-Za-z0-9 ]+', '', s)
+    s = re.sub(r'[^A-Za-z0-9 _]+', '', s)
 
     # 2) Сжимаем последовательности пробелов в один пробел
     s = re.sub(r'\s+', ' ', s).strip()
