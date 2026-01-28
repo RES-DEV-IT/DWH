@@ -74,9 +74,11 @@ def main_task():
     table = get_table("Portal", "Portal 2.0: Schedules DLC", "MasterSchedule_new")
     existing_columns = [field.name for field in table.schema().fields]
 
+    print(unique_columns)
     for unique_column in list(unique_columns):
         if unique_column not in existing_columns:
             table.create_field(unique_column, field_type="singleLineText")
+
 
     # === Добавляем данные ===
     at_records = [r[2] for r in records] # extract content from each row
