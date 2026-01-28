@@ -3,6 +3,21 @@ from airflow.providers.postgres.hooks.postgres import PostgresHook
 import datetime
 from airflow.decorators import task
 from pyairtable import Table, Api
+import re
+
+
+def normalize_string(s: str) -> str:
+    # 1) Оставляем только латиницу, цифры и пробелы
+    s = re.sub(r'[^A-Za-z0-9 ]+', '', s)
+
+    # 2) Сжимаем последовательности пробелов в один пробел
+    s = re.sub(r'\s+', ' ', s).strip()
+
+    # 3) Меняем пробелы на подчёркивания
+    s = s.replace(' ', '_')
+
+    # 4) В нижний регистр
+    return s.lower()
 
 # API TOKENS
 API_TOKENS = {
@@ -51,7 +66,9 @@ def main_task():
     # === Получаем все возможные колонки ===
     unique_columns = set(["_manuf", "_sheet_name"])
     for r in records:
-        unique_columns.update(r[2].keys())
+        fields_from_pg = r[2].keys()
+        fields_from_pg_normalized = [normalize_string(field) for field in fields_from_pg]
+        unique_columns.update(fields_from_pg_normalized)
 
     # === Обновляем колонки в airtable ===
     table = get_table("Portal", "Portal 2.0: Schedules DLC", "MasterSchedule_new")
@@ -63,8 +80,8 @@ def main_task():
 
     # === Добавляем данные ===
     at_records = [r[2] for r in records] # extract content from each row
-    table.batch_create(at_records)
-    
+    table.batch_create(at_records, typecast=True)
+
 with DAG(
     dag_id="master_schedule",
     default_args={"owner": "Artem", "retries": 0},
