@@ -237,7 +237,8 @@ def fetch_changes():
 
         html_body = for_content_to_html({responsible + f" ({responsible_mail})": for_content[responsible]})
 
-        to_email = ["letyagin.a@res-e.ru", "meyendorff@res-e.ru", responsible_mail]
+        
+        to_email = list(set(["letyagin.a@res-e.ru", "meyendorff@res-e.ru", "sivak@res-e.ru", responsible_mail, 'isaev@res-e.ru']))
         
         send_email_with_html(service, to_email, subject, html_body)
 
