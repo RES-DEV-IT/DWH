@@ -6,7 +6,7 @@ from gspread import service_account
 
 
 SERVICE_ACCOUNT_CREDS_PATH = "./plugins/schedules/download/submitted-tables-download-v02-750e825a7950.json"
-SHHETS_URL = "https://docs.google.com/spreadsheets/d/1Clbm3ie2e8HqLjHu0FLJVMUt51Y_4Fgb8Q8O6WfbpJw0"
+SHHETS_URL = "https://docs.google.com/spreadsheets/d/1Clbm3ie2e8HqLjHu0FLJVMUt51Y_4Fgb8Q8O6WfbpJw"
 
 def insert_to_gs(data_to_insert, sheet_name):
     client = service_account(SERVICE_ACCOUNT_CREDS_PATH)
