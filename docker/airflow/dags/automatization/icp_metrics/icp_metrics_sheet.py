@@ -34,21 +34,25 @@ def main_task():
 
     hook = PostgresHook(postgres_conn_id="resdb_connection")
 
-    records = hook.get_records("""
-        SELECT 
-            TO_CHAR(_created_at, 'DD.MM.YYYY'),
-            _manuf,
-            _sheet_name,
-            replace(po_item, ',', '.'),
-            key,
-            TO_CHAR(try_parse_date(old_value), 'DD.MM.YYYY'),
-            TO_CHAR(try_parse_date(current_value), 'DD.MM.YYYY')
-        FROM schedules_changes
-        WHERE try_parse_date(old_value) IS NOT NULL
-          AND try_parse_date(current_value) IS NOT NULL
-    """)
+    for manuf_name in ["DelVal", "Dembla", "HawaTubes", "LC", "RKC", "Nirmal", "EHO"]:
+        records = hook.get_records(f"""
+            SELECT 
+                TO_CHAR(_created_at, 'DD.MM.YYYY'),
+                _manuf,
+                _sheet_name,
+                replace(po_item, ',', '.'),
+                key,
+                TO_CHAR(try_parse_date(old_value), 'DD.MM.YYYY'),
+                TO_CHAR(try_parse_date(current_value), 'DD.MM.YYYY')
+            FROM schedules_changes
+            WHERE try_parse_date(old_value) IS NOT NULL
+              AND try_parse_date(current_value) IS NOT NULL
+              AND try_parse_date(old_value) < try_parse_date(current_value)
+              AND old_value != current_value
+              AND _manuf = {manuf_name}
+        """)
 
-    insert_to_gs(records, "Changes")
+        insert_to_gs(records, f"Changes {manuf_name}")
 
 with DAG(
     dag_id="icp_metrics_sheet",
@@ -58,4 +62,3 @@ with DAG(
     catchup=False
 ):
     main_task()
-    
