@@ -88,8 +88,8 @@ def main_task():
     for r in at_records:
         try:
             table.batch_create([at_records], typecast=True)
-        except:
-            print("EEEEEEEEEEEE", r)
+        except Exception as e:
+            print("EEEEEEEEEEEE", e, r)
 
 with DAG(
     dag_id="master_schedule",
