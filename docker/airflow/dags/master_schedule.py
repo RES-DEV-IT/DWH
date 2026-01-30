@@ -84,7 +84,12 @@ def main_task():
 
     # === Добавляем данные ===
     at_records = [r[2] for r in records] # extract content from each row
-    table.batch_create(at_records, typecast=True)
+
+    for r in at_records:
+        try:
+            table.batch_create([at_records], typecast=True)
+        except:
+            print("EEEEEEEEEEEE", r)
 
 with DAG(
     dag_id="master_schedule",
