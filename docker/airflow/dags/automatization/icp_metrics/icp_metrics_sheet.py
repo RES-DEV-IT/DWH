@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+from airflow.providers.postgres.hooks.postgres import PostgresHook
 from airflow.decorators import task
 from airflow import DAG
 from pyairtable import Table, Api
@@ -25,7 +26,35 @@ def insert_to_gs(data_to_insert, sheet_name):
 
 @task
 def main_task():
-    insert_to_gs([[1,2,3], [4, 5, 6]], "Changes")
+
+    hook = PostgresHook(postgres_conn_id="resdb_connection")
+
+    records = hook.get_records("""
+        SELECT 
+            _created_at,
+            _manuf,
+            _sheet_name,
+            replace(po_item, ',', '.'),
+            key,
+            try_parse_date(old_value),
+            try_parse_date(current_value)
+        FROM schedules_changes
+        WHERE try_parse_date(old_value) IS NOT NULL
+          AND try_parse_date(current_value) IS NOT NULL
+    """)
+
+    records = [{
+        "_created_at": row[0],
+        "_manuf": row[1],
+        "_sheet_name": row[2],
+        "po_item": row[3],
+        "key": row[4],
+        "old_value": row[5],
+        "current_value": row[6]
+        } 
+    for row in records]
+
+    insert_to_gs(records, "Changes")
 
 with DAG(
     dag_id="icp_metrics_sheet",
