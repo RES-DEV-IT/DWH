@@ -18,12 +18,17 @@ def insert_to_gs(data_to_insert, sheet_name):
     row_start = 2
     col_start = 1
 
-    worksheet.update(
-        f"R{row_start}C{col_start}:R{row_start + len(data_to_insert) - 1}C{col_start + len(data_to_insert[0]) - 1}",
-        data_to_insert,
-        raw=False
-    )
+    # worksheet.update(
+    #     f"R{row_start}C{col_start}:R{row_start + len(data_to_insert) - 1}C{col_start + len(data_to_insert[0]) - 1}",
+    #     data_to_insert,
+    #     raw=False
+    # )
 
+    worksheet.append_rows(
+        data_to_insert,
+        value_input_option="USER_ENTERED"
+    )
+    
 @task
 def main_task():
 
