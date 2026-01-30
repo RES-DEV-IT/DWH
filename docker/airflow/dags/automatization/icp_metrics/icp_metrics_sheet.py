@@ -43,17 +43,6 @@ def main_task():
           AND try_parse_date(current_value) IS NOT NULL
     """)
 
-    records = [{
-        "_created_at": row[0],
-        "_manuf": row[1],
-        "_sheet_name": row[2],
-        "po_item": row[3],
-        "key": row[4],
-        "old_value": row[5],
-        "current_value": row[6]
-        } 
-    for row in records]
-
     insert_to_gs(records, "Changes")
 
 with DAG(
