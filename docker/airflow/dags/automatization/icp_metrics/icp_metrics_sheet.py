@@ -49,7 +49,7 @@ def main_task():
               AND try_parse_date(current_value) IS NOT NULL
               AND try_parse_date(old_value) < try_parse_date(current_value)
               AND old_value != current_value
-              AND _manuf = {manuf_name}
+              AND _manuf = '{manuf_name}'
         """)
 
         insert_to_gs(records, f"Changes {manuf_name}")
