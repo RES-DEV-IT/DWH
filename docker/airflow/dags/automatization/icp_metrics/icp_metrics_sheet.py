@@ -31,13 +31,13 @@ def main_task():
 
     records = hook.get_records("""
         SELECT 
-            _created_at,
+            TO_CHAR(_created_at, 'DD.MM.YYYY'),
             _manuf,
             _sheet_name,
             replace(po_item, ',', '.'),
             key,
-            try_parse_date(old_value),
-            try_parse_date(current_value)
+            TO_CHAR(try_parse_date(old_value), 'DD.MM.YYYY'),
+            TO_CHAR(try_parse_date(current_value), 'DD.MM.YYYY')
         FROM schedules_changes
         WHERE try_parse_date(old_value) IS NOT NULL
           AND try_parse_date(current_value) IS NOT NULL
