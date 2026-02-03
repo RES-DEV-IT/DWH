@@ -23,7 +23,7 @@ def shifts(hook, manuf_name):
 def kks_vs_qty(hook):
     KKS_VS_QTY_QUERY = """
 -- === KKS vs QTY ===
-select _manuf, _sheet_name, po_item,
+select TO_CHAR(_created_at, 'DD.MM.YYYY'), _manuf, _sheet_name, po_item,
   array_length(string_to_array(kks, E'\n'), 1) as kks_num,
   coalesce(qty_of_valves, qty_of_pumps) as qty
 from (
