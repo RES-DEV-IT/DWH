@@ -25,6 +25,8 @@ def insert_to_gs(data_to_insert, sheet_name, append=True):
         row_start = 2
         col_start = 1
 
+        row_len = len(data_to_insert[0])
+        data_to_insert = data_to_insert + [[''] * row_len for i in range(10000)]
         worksheet.update(
             f"R{row_start}C{col_start}:R{row_start + len(data_to_insert) - 1}C{col_start + len(data_to_insert[0]) - 1}",
             data_to_insert,
