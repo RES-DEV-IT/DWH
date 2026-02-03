@@ -4,6 +4,7 @@ from airflow.decorators import task
 from airflow import DAG
 from pyairtable import Table, Api
 from gspread import service_account
+from plugins.icp_metrics import shifts, kks_vs_qty
 
 
 SERVICE_ACCOUNT_CREDS_PATH = "./plugins/schedules/download/submitted-tables-download-v02-750e825a7950.json"
@@ -35,24 +36,12 @@ def main_task():
     hook = PostgresHook(postgres_conn_id="resdb_connection")
 
     for manuf_name in ["DelVal", "Dembla", "HawaTubes", "LC", "RKC", "Nirmal", "EHO"]:
-        records = hook.get_records(f"""
-            SELECT 
-                TO_CHAR(_created_at, 'DD.MM.YYYY'),
-                _manuf,
-                _sheet_name,
-                replace(po_item, ',', '.'),
-                key,
-                TO_CHAR(try_parse_date(old_value), 'DD.MM.YYYY'),
-                TO_CHAR(try_parse_date(current_value), 'DD.MM.YYYY')
-            FROM schedules_changes
-            WHERE try_parse_date(old_value) IS NOT NULL
-              AND try_parse_date(current_value) IS NOT NULL
-              AND try_parse_date(old_value) < try_parse_date(current_value)
-              AND old_value != current_value
-              AND _manuf = '{manuf_name}'
-        """)
+        records = shifts(hook, manuf_name)
 
         insert_to_gs(records, f"Changes {manuf_name}")
+
+    df = kks_vs_qty(hook)
+    insert_to_gs(df.values.tolist(), "KKS vs QTY")
 
 with DAG(
     dag_id="icp_metrics_sheet",

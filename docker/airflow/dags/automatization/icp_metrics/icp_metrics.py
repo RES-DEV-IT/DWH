@@ -31,7 +31,6 @@ from (
 where array_length(string_to_array(kks, E'\n'), 1) != try_cast_int(coalesce(qty_of_valves, qty_of_pumps))
   and kks not like '%-%'
   and kks not like '%NA%'
-
 """
     records = hook.get_records(KKS_VS_QTY_QUERY)
     if len(records) == 0:
