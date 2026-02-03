@@ -4,7 +4,7 @@ from airflow.decorators import task
 from airflow import DAG
 from pyairtable import Table, Api
 from gspread import service_account
-from plugins.icp_metrics import shifts, kks_vs_qty
+from icp_metrics import shifts, kks_vs_qty
 
 
 SERVICE_ACCOUNT_CREDS_PATH = "./plugins/schedules/download/submitted-tables-download-v02-750e825a7950.json"
