@@ -28,7 +28,7 @@ select TO_CHAR(_created_at, 'DD.MM.YYYY'), _manuf, _sheet_name, po_item,
   coalesce(qty_of_valves, qty_of_pumps) as qty
 from (
   select 
-    _manuf, _sheet_name,
+    _created_at, _manuf, _sheet_name,
     jsonb_array_elements(content) ->> 'po_item' as po_item,
     jsonb_array_elements(content) ->> 'kks' as kks,
     jsonb_array_elements(content) ->> 'qty_of_valves' as qty_of_valves,
