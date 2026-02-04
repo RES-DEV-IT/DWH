@@ -4,7 +4,7 @@ from airflow.decorators import task
 from airflow import DAG
 from pyairtable import Table, Api
 from gspread import service_account
-from icp_metrics import shifts, kks_vs_qty, fill_percent, date_correctness
+from icp_metrics import shifts, kks_vs_qty, fill_percent, date_correctness, errors_in_date_type
 
 
 SERVICE_ACCOUNT_CREDS_PATH = "./plugins/schedules/download/submitted-tables-download-v02-750e825a7950.json"
@@ -51,7 +51,10 @@ def main_task():
 
     df = date_correctness(hook)
     insert_to_gs(df.values.tolist(), "Date correctness", append=False)
-                 
+
+    df = errors_in_date_type(hook)
+    insert_to_gs(df.values.tolist(), "Mistakes in date type", append=False)
+
 with DAG(
     dag_id="icp_metrics_sheet",
     default_args={"owner": "Artem", "retries": 0},
