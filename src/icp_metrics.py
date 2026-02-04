@@ -137,11 +137,11 @@ with start_of_production_date_extracted as (
 select 
   TO_CHAR(MAX(_created_at), 'DD.MM.YYYY') as _created_at,
   _manuf, 
-  TO_CHAR(
+  
     ROUND(
         (1 - count(*) filter(where try_parse_date(value) is null and value != 'NA')::decimal / count(*) ) * 100,
         2
-  )) as fill_percent
+  )::VARCHAR(6) as fill_percent
 from key_values_schedules
 where key in (
   'ebonite_lining_start',
