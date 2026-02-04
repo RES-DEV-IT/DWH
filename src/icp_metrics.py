@@ -59,6 +59,7 @@ def fill_percent(hook):
 -- === ПРОЦЕНТ ЗАПОЛНЕННОСТИ ПО ЗИ ===
 with start_of_production_date_extracted as (
   select 
+    _created_at,
     _manuf,
     _sheet_name,
     try_parse_date(jsonb_array_elements(content) ->> 'start_of_production_date') as start_of_production_date,
@@ -72,6 +73,7 @@ with start_of_production_date_extracted as (
     and start_of_production_date > '2025-09-01'
 ), key_values_schedules as (
    select 
+        _created_at,
         _manuf, 
         _sheet_name,
         kv.key,
@@ -80,13 +82,15 @@ with start_of_production_date_extracted as (
     lateral jsonb_array_elements(content) as elem,
     lateral jsonb_each_text((elem - 'comments')::jsonb) as kv
 )
-select _manuf as manufacturer,
+select
+    TO_CHAR(_created_at, 'DD.MM.YYYY') as _created_at,
+    _manuf as manufacturer,
   concat(
     ((1 - count(*) filter(where value = '') / count(*)::decimal) * 100) :: INTEGER,
     '%'
   ) as fill_percent
 from key_values_schedules
-group by _manuf
+group by _created_at, _manuf
 order by fill_percent desc
 """
     records = hook.get_records(QUERY)
@@ -95,8 +99,9 @@ order by fill_percent desc
     
     # === Парсим данные ===
     df = pd.DataFrame([{
-        "manuf": r[0],
-        "fill_percent": r[1],
+        "_created_at": r[0],
+        "manuf": r[1],
+        "fill_percent": r[2],
     } for r in records])
 
     return df
