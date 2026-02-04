@@ -453,3 +453,54 @@ where value != 'NA'
     } for r in records])
 
     return df
+
+def two_weeks(hook):
+    QUERY = """
+  -- === НЕ БЫЛО ОБНОВЛЕНИЙ БОЛЬШЕ ДВУХ НЕДЕЛЬ ===
+with current_schedule as (
+  select 
+    _manuf,
+    _sheet_name,
+    jsonb_array_elements(content) ->> '_row_number' as rn,
+    jsonb_array_elements(content) ->> 'status' as status,
+    jsonb_array_elements(content) as content
+  from (select *, max(_created_at) over(partition by _manuf, _sheet_name) as max_created_at from stage.schedules_values) as t1
+  where _created_at = max_created_at
+), prev_schedule as (
+  select 
+    _manuf,
+    _sheet_name,
+    jsonb_array_elements(content) ->> '_row_number' as rn,
+    jsonb_array_elements(content) ->> 'status' as status,
+    jsonb_array_elements(content) as content
+  from (
+    select *,
+      max(_created_at) over(partition by _manuf, _sheet_name) as max_created_at
+    from stage.schedules_values
+    where _created_at < CURRENT_TIMESTAMP - interval '14 day'
+  ) as t1
+  where _created_at = max_created_at
+)
+select 
+  c._manuf,
+  c._sheet_name
+from current_schedule c
+inner join prev_schedule p
+on c._manuf = p._manuf and c._sheet_name = p._sheet_name and c.rn = p.rn
+where c.status = 'Live'
+  and p.status = 'Live'
+  and c.content = p.content
+ group by c._manuf, c._sheet_name
+"""
+
+    records = hook.get_records(QUERY)
+    if len(records) == 0:
+        return None
+    
+    # === Парсим данные ===
+    df = pd.DataFrame([{
+        "_manuf": r[0],
+        "_sheet_name": r[1]
+    } for r in records])
+
+    return df
