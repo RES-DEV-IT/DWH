@@ -83,14 +83,14 @@ with start_of_production_date_extracted as (
     lateral jsonb_each_text((elem - 'comments')::jsonb) as kv
 )
 select
-    TO_CHAR(_created_at, 'DD.MM.YYYY') as _created_at,
+    TO_CHAR(MAX(_created_at), 'DD.MM.YYYY') as _created_at,
     _manuf as manufacturer,
   concat(
     ((1 - count(*) filter(where value = '') / count(*)::decimal) * 100) :: INTEGER,
     '%'
   ) as fill_percent
 from key_values_schedules
-group by _created_at, _manuf
+group by _manuf
 order by fill_percent desc
 """
     records = hook.get_records(QUERY)
