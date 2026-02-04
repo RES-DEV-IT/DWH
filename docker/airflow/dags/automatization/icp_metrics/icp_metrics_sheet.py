@@ -55,7 +55,7 @@ def main_task():
     df = errors_in_date_type(hook)
     insert_to_gs(df.values.tolist(), "Mistakes in date type", append=False)
 
-    df = errors_in_date_type(hook)
+    df = two_weeks(hook)
     insert_to_gs(df.values.tolist(), "Two weeks", append=False)
 
 with DAG(
