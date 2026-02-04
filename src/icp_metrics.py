@@ -53,3 +53,50 @@ where array_length(string_to_array(kks, E'\n'), 1) != try_cast_int(coalesce(qty_
         "qty": r[4]
     } for r in records])
     return df
+
+def fill_percent(hook):
+    QUERY = """
+-- === ПРОЦЕНТ ЗАПОЛНЕННОСТИ ПО ЗИ ===
+with start_of_production_date_extracted as (
+  select 
+    _manuf,
+    _sheet_name,
+    try_parse_date(jsonb_array_elements(content) ->> 'start_of_production_date') as start_of_production_date,
+    content
+  from (select *, max(_created_at) over(partition by _manuf, _sheet_name) max_created_at from stage.schedules_values) as t1
+  where _created_at = max_created_at
+), active_projects as (
+  select *
+  from start_of_production_date_extracted
+  where start_of_production_date is not null
+    and start_of_production_date > '2025-09-01'
+), key_values_schedules as (
+   select 
+        _manuf, 
+        _sheet_name,
+        kv.key,
+        kv.value
+    from active_projects,
+    lateral jsonb_array_elements(content) as elem,
+    lateral jsonb_each_text((elem - 'comments')::jsonb) as kv
+)
+select _manuf as manufacturer,
+  concat(
+    ((1 - count(*) filter(where value = '') / count(*)::decimal) * 100) :: INTEGER,
+    '%'
+  ) as fill_percent
+from key_values_schedules
+group by _manuf
+order by fill_percent desc
+"""
+    records = hook.get_records(QUERY)
+    if len(records) == 0:
+        return None
+    
+    # === Парсим данные ===
+    df = pd.DataFrame([{
+        "manuf": r[0],
+        "fill_percent": r[1],
+    } for r in records])
+
+    return df
