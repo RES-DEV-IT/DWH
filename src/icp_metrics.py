@@ -446,8 +446,11 @@ where value != 'NA'
     # === Парсим данные ===
     df = pd.DataFrame([{
         "_created_at": r[0],
-        "manuf": r[1],
-        "fill_percent": r[2],
+        "_manuf": r[1],
+        "_sheet_name": r[2],
+        "po_item": r[3],
+        "key": r[4],
+        "value": r[5]
     } for r in records])
 
     return df
