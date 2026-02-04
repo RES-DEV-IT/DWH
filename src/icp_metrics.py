@@ -289,6 +289,7 @@ def errors_in_date_type(hook):
     content
   from (select *, max(_created_at) over(partition by _manuf, _sheet_name) max_created_at from stage.schedules_values) as t1
   where _created_at = max_created_at
+    and _created_at > CURRENT_DATE - interval '3 day'
 ), active_projects as (
   select *
   from start_of_production_date_extracted
