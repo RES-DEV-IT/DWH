@@ -38,10 +38,10 @@ def main_task():
 
     hook = PostgresHook(postgres_conn_id="resdb_connection")
 
-    # for manuf_name in ["DelVal", "Dembla", "HawaTubes", "LC", "RKC", "Nirmal", "EHO"]:
-    #     records = shifts(hook, manuf_name)
+    for manuf_name in ["DelVal", "Dembla", "HawaTubes", "LC", "RKC", "Nirmal", "EHO"]:
+        records = shifts(hook, manuf_name)
 
-    #     insert_to_gs(records, f"Changes {manuf_name}", append=True)
+        insert_to_gs(records, f"Changes {manuf_name}", append=True)
 
     df = kks_vs_qty(hook)
     insert_to_gs(df.values.tolist(), "KKS vs QTY", append=False)
