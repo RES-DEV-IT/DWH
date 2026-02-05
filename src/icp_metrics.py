@@ -138,11 +138,13 @@ select
   TO_CHAR(MAX(_created_at), 'DD.MM.YYYY') as _created_at,
   _manuf, 
   CONCAT(
-    ((1 - count(*) filter(where try_parse_date(value) is null and value != 'NA')::decimal / count(*) ) * 100)::INTEGER,
+    ((1 - count(*) filter(where try_parse_date(value) is null)::decimal / count(*) ) * 100)::INTEGER,
     '%'
   ) as fill_percent
 from key_values_schedules
-where key in (
+where value != 'NA'
+  AND REPLACE(value, ' ', ') != ''
+  AND key in (
   'ebonite_lining_start',
   'cage_cage_readiness',
   'disc_semi-finish_machining_start',
