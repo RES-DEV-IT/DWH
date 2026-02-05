@@ -459,40 +459,120 @@ where value != 'NA'
 def two_weeks(hook):
     QUERY = """
   -- === НЕ БЫЛО ОБНОВЛЕНИЙ БОЛЬШЕ ДВУХ НЕДЕЛЬ ===
-with current_schedule as (
-  select 
-    _manuf,
-    _sheet_name,
-    jsonb_array_elements(content) ->> '_row_number' as rn,
-    jsonb_array_elements(content) ->> 'status' as status,
-    jsonb_array_elements(content) as content
-  from (select *, max(_created_at) over(partition by _manuf, _sheet_name) as max_created_at from stage.schedules_values) as t1
-  where _created_at = max_created_at
-), prev_schedule as (
-  select 
-    _manuf,
-    _sheet_name,
-    jsonb_array_elements(content) ->> '_row_number' as rn,
-    jsonb_array_elements(content) ->> 'status' as status,
-    jsonb_array_elements(content) as content
-  from (
-    select *,
-      max(_created_at) over(partition by _manuf, _sheet_name) as max_created_at
-    from stage.schedules_values
-    where _created_at < CURRENT_TIMESTAMP - interval '14 day'
-  ) as t1
-  where _created_at = max_created_at
+WITH latest_schedules AS (
+    SELECT DISTINCT ON (_manuf, _sheet_name)
+        _manuf,
+        _sheet_name,
+        content,
+        _created_at
+    FROM stage.schedules_values
+    ORDER BY _manuf, _sheet_name, _created_at DESC
+),
+prev_schedules AS (
+    SELECT DISTINCT ON (_manuf, _sheet_name)
+        _manuf,
+        _sheet_name,
+        content,
+        _created_at
+    FROM stage.schedules_values
+    WHERE _created_at < CURRENT_TIMESTAMP - INTERVAL '14 days'
+    ORDER BY _manuf, _sheet_name, _created_at DESC
+),
+latest_colors AS (
+    SELECT DISTINCT ON (_manuf, _sheet_name)
+        _manuf,
+        _sheet_name,
+        content,
+        _created_at
+    FROM stage.schedules_colors
+    ORDER BY _manuf, _sheet_name, _created_at DESC
+),
+prev_colors AS (
+    SELECT DISTINCT ON (_manuf, _sheet_name)
+        _manuf,
+        _sheet_name,
+        content,
+        _created_at
+    FROM stage.schedules_colors
+    WHERE _created_at < CURRENT_TIMESTAMP - INTERVAL '14 days'
+    ORDER BY _manuf, _sheet_name, _created_at DESC
+),
+kv_current_schedules AS (
+    SELECT 
+        ls._manuf, 
+        ls._sheet_name,
+        kv.key,
+        kv.value,
+        elem ->> '_row_number' AS rn
+    FROM latest_schedules ls,
+    LATERAL jsonb_array_elements(ls.content) AS elem,
+    LATERAL jsonb_each_text((elem - 'comments')::jsonb) AS kv
+    WHERE (elem ->> 'status') = 'Live'
+),
+kv_prev_schedules AS (
+    SELECT 
+        ps._manuf, 
+        ps._sheet_name,
+        kv.key,
+        kv.value,
+        elem ->> '_row_number' AS rn
+    FROM prev_schedules ps,
+    LATERAL jsonb_array_elements(ps.content) AS elem,
+    LATERAL jsonb_each_text((elem - 'comments')::jsonb) AS kv
+    WHERE (elem ->> 'status') = 'Live'
+),
+kv_current_colors AS (
+    SELECT 
+        lc._manuf, 
+        lc._sheet_name,
+        kv.key,
+        kv.value,
+        elem ->> '_row_number' AS rn
+    FROM latest_colors lc,
+    LATERAL jsonb_array_elements(lc.content) AS elem,
+    LATERAL jsonb_each_text((elem - 'comments')::jsonb) AS kv
+),
+kv_prev_colors AS (
+    SELECT 
+        pc._manuf, 
+        pc._sheet_name,
+        kv.key,
+        kv.value,
+        elem ->> '_row_number' AS rn
+    FROM prev_colors pc,
+    LATERAL jsonb_array_elements(pc.content) AS elem,
+    LATERAL jsonb_each_text((elem - 'comments')::jsonb) AS kv
+), sheets_with_changes as (
+  SELECT 
+      cs._manuf, 
+      cs._sheet_name
+  FROM kv_current_schedules cs
+  INNER JOIN kv_prev_schedules ps 
+      ON cs._manuf = ps._manuf 
+      AND cs._sheet_name = ps._sheet_name 
+      AND cs.rn = ps.rn 
+      AND cs.key = ps.key
+  INNER JOIN kv_current_colors cc 
+      ON cs._manuf = cc._manuf 
+      AND cs._sheet_name = cc._sheet_name 
+      AND cs.rn = cc.rn 
+      AND cs.key = cc.key
+  INNER JOIN kv_prev_colors pc 
+      ON cs._manuf = pc._manuf 
+      AND cs._sheet_name = pc._sheet_name 
+      AND cs.rn = pc.rn 
+      AND cs.key = pc.key
+  WHERE ps.value != cs.value
+     OR (
+          pc.value != cc.value
+          AND cc.value != '(255, 255, 0)'
+     )
+  GROUP BY cs._manuf, cs._sheet_name
 )
-select 
-  c._manuf,
-  c._sheet_name
-from current_schedule c
-inner join prev_schedule p
-on c._manuf = p._manuf and c._sheet_name = p._sheet_name and c.rn = p.rn
-where c.status = 'Live'
-  and p.status = 'Live'
-  and c.content = p.content
- group by c._manuf, c._sheet_name
+select l._manuf, l._sheet_name
+from latest_schedules l
+left join sheets_with_changes c on l._manuf = c._manuf and l._sheet_name = c._sheet_name
+where c._manuf is null
 """
 
     records = hook.get_records(QUERY)
