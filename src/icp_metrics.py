@@ -504,3 +504,56 @@ where c.status = 'Live'
     } for r in records])
 
     return df
+
+def yellow_dates(hook):
+    QUERY = """-- === ЖЕЛТЫЕ ДАТЫ ===
+with key_values_schedules as (
+    select 
+        _manuf, 
+        _sheet_name,
+        --jsonb_array_elements(content) ->> '_row_number' as rn,
+        kv.key,
+        try_parse_date(kv.value) as value,
+        elem ->> '_row_number' AS rn,
+        elem ->> 'po_item' AS po_item
+    from (select *, max(_created_at) over(partition by _manuf, _sheet_name) max_created_at from stage.schedules_values) as t1,
+    lateral jsonb_array_elements(content) as elem,
+    lateral jsonb_each_text((elem - 'comments')::jsonb) as kv
+    where _created_at = max_created_at
+      and try_parse_date(kv.value) is not null
+      and _created_at > CURRENT_TIMESTAMP - interval '1 day'
+), key_values_colors as (
+    select 
+        _manuf, 
+        _sheet_name,
+        --jsonb_array_elements(content) ->> '_row_number' as rn,
+        kv.key,
+        kv.value as value,
+        elem ->> '_row_number' AS rn
+    from (select *, max(_created_at) over(partition by _manuf, _sheet_name) max_created_at from stage.schedules_colors) as t1,
+    lateral jsonb_array_elements(content) as elem,
+    lateral jsonb_each_text((elem - 'comments')::jsonb) as kv
+    where _created_at = max_created_at
+)
+select
+  v._manuf, v._sheet_name, v.po_item, v.key, v.value, c.value
+from key_values_schedules v
+inner join key_values_colors c
+on c._manuf = v._manuf and c._sheet_name = v._sheet_name and c.key = v.key and c.rn = v.rn 
+where c.value = '(255, 255, 0)'
+"""
+
+    records = hook.get_records(QUERY)
+    if len(records) == 0:
+        return None
+    
+    # === Парсим данные ===
+    df = pd.DataFrame([{
+        "_manuf": r[0],
+        "_sheet_name": r[1],
+        "po_item": r[2],
+        "key": r[3],
+        "value": r[4]
+    } for r in records])
+
+    return df

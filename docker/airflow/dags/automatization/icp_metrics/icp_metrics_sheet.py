@@ -4,13 +4,17 @@ from airflow.decorators import task
 from airflow import DAG
 from pyairtable import Table, Api
 from gspread import service_account
-from icp_metrics import shifts, kks_vs_qty, fill_percent, date_correctness, errors_in_date_type, two_weeks
+from icp_metrics import shifts, kks_vs_qty, fill_percent, date_correctness, \
+    errors_in_date_type, two_weeks, yellow_dates
 
 
 SERVICE_ACCOUNT_CREDS_PATH = "./plugins/schedules/download/submitted-tables-download-v02-750e825a7950.json"
 SHHETS_URL = "https://docs.google.com/spreadsheets/d/1Clbm3ie2e8HqLjHu0FLJVMUt51Y_4Fgb8Q8O6WfbpJw"
 
 def insert_to_gs(data_to_insert, sheet_name, append=True):
+    if len(data_to_insert) == 0:
+        return 
+    
     client = service_account(SERVICE_ACCOUNT_CREDS_PATH)
 
     worksheet = client.open_by_url(SHHETS_URL).worksheet(sheet_name)
@@ -57,6 +61,9 @@ def main_task():
 
     df = two_weeks(hook)
     insert_to_gs(df.values.tolist(), "Two weeks", append=False)
+
+    df = yellow_dates(hook)
+    insert_to_gs(df.values.tolist(), "Yellow dates", append=False)
 
 with DAG(
     dag_id="icp_metrics_sheet",
