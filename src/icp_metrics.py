@@ -466,6 +466,8 @@ WITH latest_schedules AS (
         content,
         _created_at
     FROM stage.schedules_values
+    WHERE _created_at > CURRENT_TIMESTAMP - INTERVAL '1 day'
+      AND manuf != 'Jsons'
     ORDER BY _manuf, _sheet_name, _created_at DESC
 ),
 prev_schedules AS (
