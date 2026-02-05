@@ -536,7 +536,7 @@ with key_values_schedules as (
     where _created_at = max_created_at
 )
 select
-  v._manuf, v._sheet_name, v.po_item, v.key, v.value, c.value
+  v._manuf, v._sheet_name, v.po_item, v.key, TO_CHAR(v.value, 'DD.MM.YYYY'), c.value
 from key_values_schedules v
 inner join key_values_colors c
 on c._manuf = v._manuf and c._sheet_name = v._sheet_name and c.key = v.key and c.rn = v.rn 
