@@ -143,7 +143,7 @@ select
   ) as fill_percent
 from key_values_schedules
 where value != 'NA'
-  AND REPLACE(value, ' ', ') != ''
+  AND REPLACE(value, ' ', '') != ''
   AND key in (
   'ebonite_lining_start',
   'cage_cage_readiness',
