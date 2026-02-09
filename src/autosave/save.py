@@ -179,7 +179,7 @@ def save(record, delete_after=True):
         else:
             path_from = "./"
             path_to = path + "/"
-            copy_cmd(path_from, "./" + path_to, filename)
+            copy_cmd(path_from, path_to, filename)
             #shutil.copy(filename, path + "/" + filename)
             all_filenames.append({
                 "type": "file",
