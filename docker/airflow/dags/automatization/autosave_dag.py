@@ -193,7 +193,7 @@ def copy_to_share():
     print("AUTOSAVE_DEPLOY status:", var)
     if var == "TRUE":
         try:
-            subprocess.run("rsync -avh --progress /AUTOSAVE_SHARE_COPY/ './syncer/'", shell=True, check=True)
+            subprocess.run("rsync -avh --progress /AUTOSAVE_SHARE_COPY/ /SHARE_MOUNT_FOR_AUTOSAVE/", shell=True, check=True)
         except subprocess.CalledProcessError as e:
             print(f"Ошибка! Код: {e.returncode}")
             print("Ошибка:", e.stderr)
@@ -239,7 +239,7 @@ def update_airtable(info):
         success = 0
         for file in record_info["filenames"]:
             
-            file_path = file["path"].replace("/AUTOSAVE_SHARE_COPY", "./syncer")
+            file_path = file["path"].replace("/AUTOSAVE_SHARE_COPY", "/SHARE_MOUNT_FOR_AUTOSAVE")
             file_type = file["type"]
 
             print("├──", file_path)
@@ -270,8 +270,8 @@ def update_airtable(info):
                 }
             })
     
-    if var == "TRUE":
-        airtable_pit.batch_update(airtable_records)
+    # if var == "TRUE":
+    #     airtable_pit.batch_update(airtable_records)
 
 with DAG(
     dag_id=f'autosave_dag',
