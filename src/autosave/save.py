@@ -103,7 +103,7 @@ def save(record, delete_after=True):
 
             # end_folder_to_extract = filename[:-4]
             
-            print("---> Extracting:", filename, f"---> {path + "/"}")
+            print("---> Extracting:", filename, f"---> {path + '/'}")
 
             # Создаем папку, если её не существет
             if not os.path.isdir(path + "/"):

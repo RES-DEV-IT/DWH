@@ -62,14 +62,14 @@ class Record:
 
         # Rev
         self.profile["rev#"] = str(record["fields"]['[T] Rev# (for formula "Task")'])
-        self.profile["rev_date"] = record["fields"][f"Rev.{str(self.profile["rev#"])} dtd."][:10].replace("-", ".")
+        self.profile["rev_date"] = record["fields"][f"Rev.{str(self.profile['rev#'])} dtd."][:10].replace("-", ".")
 
         # Files
         self.profile["files"] = [{
             "url": file["url"],
             "filename": file["filename"].replace("/", "_"),
             "size": file["size"]
-        } for file in record["fields"][f"Rev.{str(self.profile["rev#"])} files"]]
+        } for file in record["fields"][f"Rev.{str(self.profile['rev#'])} files"]]
         
         # Техника или Кооперация
         self.profile["folder"] = self.folder()
@@ -137,9 +137,9 @@ class Record:
             path += self.profile["doc_type_ru"] + "/"
 
             if self.profile["is_items_all"]:
-                path += f"{self.profile["rev_date"]} - Ревизия {self.profile["rev#"]}"
+                path += f"{self.profile['rev_date']} - Ревизия {self.profile['rev#']}"
             else:
-                path += f"{self.profile["rev_date"]} - Ревизия {self.profile["rev#"]} ({", ".join(self.profile["item_agg"])})"
+                path += f"{self.profile['rev_date']} - Ревизия {self.profile['rev#']} ({", ".join(self.profile["item_agg"])})"
                 
         return path
     
