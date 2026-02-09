@@ -139,7 +139,7 @@ class Record:
             if self.profile["is_items_all"]:
                 path += f"{self.profile['rev_date']} - Ревизия {self.profile['rev#']}"
             else:
-                path += f"{self.profile['rev_date']} - Ревизия {self.profile['rev#']} ({", ".join(self.profile["item_agg"])})"
+                path += f"{self.profile['rev_date']} - Ревизия {self.profile['rev#']} ({", ".join(self.profile['item_agg'])})"
                 
         return path
     
