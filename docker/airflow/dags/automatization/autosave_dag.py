@@ -161,11 +161,11 @@ SHARE_PROJECTS = [
 
 @task
 def auto_save():
-    if os.path.isdir("./dags/AUTOSAVE_TESTING_FOLDER"):
-        shutil.rmtree("./dags/AUTOSAVE_TESTING_FOLDER")
+    if os.path.isdir("/AUTOSAVE_SHARE_COPY"):
+        shutil.rmtree("/AUTOSAVE_SHARE_COPY")
 
     # Создаем объект для выгрузки инфы с портала
-    saver = AutoSaver("./dags/AUTOSAVE_TESTING_FOLDER", SHARE_PROJECTS)
+    saver = AutoSaver("/AUTOSAVE_SHARE_COPY", SHARE_PROJECTS)
     
     # Выгружаем "Uploaded" строки с портала
     saver.fetch_records()
@@ -188,12 +188,12 @@ def auto_save():
 
 @task
 def copy_to_share():
-    print(os.listdir("./dags/AUTOSAVE_TESTING_FOLDER"))
+    print(os.listdir("/AUTOSAVE_SHARE_COPY"))
     var = Variable.get("AUTOSAVE_DEPLOY")
     print("AUTOSAVE_DEPLOY status:", var)
     if var == "TRUE":
         try:
-            subprocess.run("rsync -avh --progress ./dags/AUTOSAVE_TESTING_FOLDER/ './syncer/'", shell=True, check=True)
+            subprocess.run("rsync -avh --progress /AUTOSAVE_SHARE_COPY/ './syncer/'", shell=True, check=True)
         except subprocess.CalledProcessError as e:
             print(f"Ошибка! Код: {e.returncode}")
             print("Ошибка:", e.stderr)
@@ -239,7 +239,7 @@ def update_airtable(info):
         success = 0
         for file in record_info["filenames"]:
             
-            file_path = file["path"].replace("dags/AUTOSAVE_TESTING_FOLDER", "./syncer")
+            file_path = file["path"].replace("/AUTOSAVE_SHARE_COPY", "./syncer")
             file_type = file["type"]
 
             print("├──", file_path)
