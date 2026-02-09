@@ -2,13 +2,13 @@ from airflow import DAG
 from datetime import datetime, timedelta
 from airflow.decorators import task
 from airflow.models import Variable
-from src.autosave.AutoSaver import AutoSaver
-from src.autosave.save import save
+from plugins.autosave.AutoSaver import AutoSaver
+from plugins.autosave.save import save
 import subprocess
 import os
 from pyairtable import Table, Base, Api
 import shutil
-from src.autosave.AT.airtableApi import get_table
+from plugins.autosave.AT.airtableApi import get_table
 
 
 airtable_pit = get_table("Portal", "Portal 2.0.4", "PIT")#api.table(BASE_ID, f"PIT")
