@@ -78,7 +78,7 @@ def save(record, delete_after=True):
     print(f"LOCAL SAVING [R-{record.profile['bare']}]")
     print("    > LOCAL_PATH", record.path())
 
-    path = record.path()[2:]
+    path = record.path()
     all_filenames = []
 
     path_on_share = "Z:/Проекты/" + "/".join(path.split("/")[1:])
