@@ -161,8 +161,8 @@ SHARE_PROJECTS = [
 
 @task
 def auto_save():
-    if os.path.isdir("/AUTOSAVE_SHARE_COPY"):
-        shutil.rmtree("/AUTOSAVE_SHARE_COPY")
+    # if os.path.isdir("/AUTOSAVE_SHARE_COPY"):
+    #     shutil.rmtree("/AUTOSAVE_SHARE_COPY")
 
     # Создаем объект для выгрузки инфы с портала
     saver = AutoSaver("/AUTOSAVE_SHARE_COPY", SHARE_PROJECTS)
