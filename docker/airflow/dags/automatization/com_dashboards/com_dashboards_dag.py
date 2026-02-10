@@ -132,8 +132,8 @@ def main_task():
 
     # Вставка в гугл таблицу
     insert_to_gs(URL, data_pr_type, "_По типу", append=False)
-    insert_to_gs(URL, data_npp, "_По ЗИ", append=False)
-    insert_to_gs(URL, data_manuf, "_По объектам поставки", append=False)
+    insert_to_gs(URL, data_npp, "_По объектам поставки", append=False)
+    insert_to_gs(URL, data_manuf, "_По ЗИ", append=False)
     
 
 with DAG(
