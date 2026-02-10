@@ -6,14 +6,13 @@ from autosave.AutoSaver import AutoSaver
 from autosave.save import save
 import subprocess
 import os
-from pyairtable import Table, Base, Api
-import shutil
 from autosave.AT.airtableApi import get_table
 
 
-airtable_pit = get_table("Portal", "Portal 2.0.4", "PIT")#api.table(BASE_ID, f"PIT")
+# Получение таблицы с AirTable
+airtable_pit = get_table("Portal", "Portal 2.0.4", "PIT")
 
-
+# Пока здесь заглушка, в будущем это будет os.listdir от проектов на Share
 SHARE_PROJECTS = [
  '0 - Инструменты',
  '1 - Внутренние проекты',
@@ -200,32 +199,6 @@ def copy_to_share():
         except Exception as e:
             print("Неизвестная ошибка:", str(e))
 
-# @task
-# def update_airtable(saved_records_ids, paths):
-#     print(saved_records_ids, paths)
-    
-#     for path in paths:
-#         docker_path = path.replace("Z:/Проекты/", "./syncer/")
-#         if not os.path.isfile(docker_path):
-#             raise ValueError(f"NON SYNCED file: {path}")
-        
-#     var = Variable.get("AUTOSAVE_DEPLOY")
-#     print("AURTOSAVE_DEPLOY status:", var)
-#     if var == "TRUE":
-#         airtable_records = []
-
-#         for at_id, path in zip(saved_records_ids, paths):
-#             airtable_records.append({
-#                 "id": at_id, 
-#                 "fields": {
-#                     "Status": "ICP verification",
-#                     "autosaved": True,
-#                     "[T] Окончание сохранения (чек)": True,
-#                     "Enter server path": path,
-#                 }
-#             })
-#         airtable_pit.batch_update(airtable_records)
-
 @task
 def update_airtable(info):
     var = Variable.get("AUTOSAVE_DEPLOY")
@@ -270,6 +243,7 @@ def update_airtable(info):
                 }
             })
     
+    # Здесь пока закоментил, тут будут обновляться строки в AirTable
     # if var == "TRUE":
     #     airtable_pit.batch_update(airtable_records)
 
@@ -290,8 +264,6 @@ with DAG(
     copy_task = copy_to_share()
     update_task = update_airtable(
         info = auto_save_output
-        # saved_records_ids=auto_save_output["saved_records_ids"],
-        # paths=auto_save_output["paths"]
     )
 
     auto_save_output >> copy_task >> update_task

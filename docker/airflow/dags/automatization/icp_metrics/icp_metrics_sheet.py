@@ -2,40 +2,12 @@ from datetime import datetime, timedelta
 from airflow.providers.postgres.hooks.postgres import PostgresHook
 from airflow.decorators import task
 from airflow import DAG
-from pyairtable import Table, Api
-from gspread import service_account
 from icp_metrics import shifts, kks_vs_qty, fill_percent, date_correctness, \
     errors_in_date_type, two_weeks, yellow_dates
+from gs import insert_to_gs
 
 
-SERVICE_ACCOUNT_CREDS_PATH = "./plugins/schedules/download/submitted-tables-download-v02-750e825a7950.json"
-SHHETS_URL = "https://docs.google.com/spreadsheets/d/1Clbm3ie2e8HqLjHu0FLJVMUt51Y_4Fgb8Q8O6WfbpJw"
-
-def insert_to_gs(data_to_insert, sheet_name, append=True):
-    if len(data_to_insert) == 0:
-        return 
-    
-    client = service_account(SERVICE_ACCOUNT_CREDS_PATH)
-
-    worksheet = client.open_by_url(SHHETS_URL).worksheet(sheet_name)
-    # client.open_by_url(LEADS_URL).add_worksheet(title="New sheet", rows=100, cols=20)
-
-    if append:
-        worksheet.append_rows(
-            data_to_insert,
-            value_input_option="USER_ENTERED"
-        )
-    else:
-        row_start = 2
-        col_start = 1
-
-        row_len = len(data_to_insert[0])
-        data_to_insert = data_to_insert + [[''] * row_len for i in range(10000)]
-        worksheet.update(
-            f"R{row_start}C{col_start}:R{row_start + len(data_to_insert) - 1}C{col_start + len(data_to_insert[0]) - 1}",
-            data_to_insert,
-            raw=False
-        )
+URL = "https://docs.google.com/spreadsheets/d/1Clbm3ie2e8HqLjHu0FLJVMUt51Y_4Fgb8Q8O6WfbpJw"
 
 @task
 def main_task():
@@ -45,25 +17,25 @@ def main_task():
     for manuf_name in ["DelVal", "Dembla", "HawaTubes", "LC", "RKC", "Nirmal", "EHO"]:
         records = shifts(hook, manuf_name)
 
-        insert_to_gs(records, f"Changes {manuf_name}", append=True)
+        insert_to_gs(URL, records, f"Changes {manuf_name}", append=True)
 
     df = kks_vs_qty(hook)
-    insert_to_gs(df.values.tolist(), "KKS vs QTY", append=False)
+    insert_to_gs(URL, df.values.tolist(), "KKS vs QTY", append=False)
 
     df = fill_percent(hook)
-    insert_to_gs(df.values.tolist(), "Fill percent", append=False)
+    insert_to_gs(URL, df.values.tolist(), "Fill percent", append=False)
 
     df = date_correctness(hook)
-    insert_to_gs(df.values.tolist(), "Date correctness", append=False)
+    insert_to_gs(URL, df.values.tolist(), "Date correctness", append=False)
 
     df = errors_in_date_type(hook)
-    insert_to_gs(df.values.tolist(), "Mistakes in date type", append=False)
+    insert_to_gs(URL, df.values.tolist(), "Mistakes in date type", append=False)
 
     df = two_weeks(hook)
-    insert_to_gs(df.values.tolist(), "Two weeks", append=False)
+    insert_to_gs(URL, df.values.tolist(), "Two weeks", append=False)
 
     df = yellow_dates(hook)
-    insert_to_gs(df.values.tolist(), "Yellow dates", append=False)
+    insert_to_gs(URL, df.values.tolist(), "Yellow dates", append=False)
 
 with DAG(
     dag_id="icp_metrics_sheet",
