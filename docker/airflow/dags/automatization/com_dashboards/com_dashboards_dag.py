@@ -81,7 +81,7 @@ def manuf_at(kom_projects):
                     data_manuf[manuf] = data_manuf[manuf] + 1 if manuf in data_manuf else 1
 
     data_manuf = dict(sorted(data_manuf.items(), key=lambda item: item[1], reverse=True))
-    return data_manuf.items()
+    return list(data_manuf.items())
 
 @task
 def main_task():
