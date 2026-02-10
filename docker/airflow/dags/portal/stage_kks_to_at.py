@@ -55,7 +55,7 @@ with DAG(
 
         res = at_table.batch_upsert(
             records=payload[:10],
-            key_fields=["_sheet_name", "kks"],
+            key_fields=["_sheet_name", "po_item", "kks"],
             typecast=True,
         )
         return res
