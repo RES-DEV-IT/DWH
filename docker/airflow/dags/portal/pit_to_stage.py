@@ -89,7 +89,7 @@ with DAG(
     dag_id=f"portal_{TARGET_TABLE}",
     default_args=default_args,
     start_date=datetime.datetime(2025, 11, 27, 4, 0, 0, 0),
-    schedule_interval="0 0 * * *",
+    schedule_interval="0 0 * * 0",
     catchup=False
 ) as dags:
     fetch_table()
