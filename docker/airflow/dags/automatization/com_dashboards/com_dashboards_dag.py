@@ -77,7 +77,9 @@ def manuf_at(kom_projects):
 
         if manufs is not None:
             for manuf in manufs.split(", "):
-                if manuf not in ('Shaanxi Zhonghuan Machinery Co.', 'DelVal', 'LC', 'RKC', 'EHO', 'Dembla', 'Nirmal', 'Hawa Tubes'):
+                if manuf not in ('Shaanxi Zhonghuan Machinery Co.', 'DelVal', 'LC', 'RKC', 'EHO', 'Dembla', 'Nirmal', 'Hawa Tubes')\
+                    and 'henan' not in manuf.lower()\
+                    and 'ltd' not in manuf.lower():
                     data_manuf[manuf] = data_manuf[manuf] + 1 if manuf in data_manuf else 1
 
     data_manuf = dict(sorted(data_manuf.items(), key=lambda item: item[1], reverse=True))
