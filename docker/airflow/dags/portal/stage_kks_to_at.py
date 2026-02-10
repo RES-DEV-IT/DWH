@@ -60,4 +60,4 @@ with DAG(
         )
         return res
     
-    main_task
+    main_task()
