@@ -29,12 +29,12 @@ def pr_type_at(kom_projects):
             data_pr_type[pr_type] = data_pr_type[pr_type] + 1 if pr_type in data_pr_type else 1
 
     data_pr_type = [
-        "Инжиниринг", "И", data_pr_type.get("И", 0),
-        "Сопровождение", "С", data_pr_type.get("С", 0),
-        "Инжиниринг и сопровождение", "И/С", data_pr_type.get("И/С", 0),
-        "Производство", "П", data_pr_type.get("П", 0),
-        "Инжиниринг и производство", "И/П", data_pr_type.get("И/П", 0),
-        "Итого:", "", data_pr_type.get("И", 0) + data_pr_type.get("С", 0) + data_pr_type.get("И/С", 0) + data_pr_type.get("П", 0) + data_pr_type.get("И/П", 0)
+        ("Инжиниринг", "И", data_pr_type.get("И", 0)),
+        ("Сопровождение", "С", data_pr_type.get("С", 0)),
+        ("Инжиниринг и сопровождение", "И/С", data_pr_type.get("И/С", 0)),
+        ("Производство", "П", data_pr_type.get("П", 0)),
+        ("Инжиниринг и производство", "И/П", data_pr_type.get("И/П", 0)),
+        ("Итого:", "", data_pr_type.get("И", 0) + data_pr_type.get("С", 0) + data_pr_type.get("И/С", 0) + data_pr_type.get("П", 0) + data_pr_type.get("И/П", 0))
     ]
     return data_pr_type
 
@@ -102,7 +102,25 @@ def main_task():
     hook = PostgresHook(postgres_conn_id="resdb_connection")
     records = hook.get_records(
         """
-            SELECT
+            select _manuf, count(*) as c
+            from (
+            select _manuf, _sheet_name, count(status) filter(where status = 'Finished') as finished_count, count(*) as total_count
+            from (
+                select
+                _created_at,
+                _manuf,
+                _sheet_name, 
+                jsonb_array_elements(content) ->> 'status' as status,
+                max(_created_at) over(partition by _manuf, _sheet_name) max_created_at
+                from stage.schedules_values
+                --where _created_at < '2025-12-6'
+            ) as t1
+            where _created_at = t1.max_created_at
+            group by _manuf, _sheet_name
+            ) as t2
+            where finished_count != total_count
+            group by _manuf  
+            order by c desc
         """
     )
 
