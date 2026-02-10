@@ -60,6 +60,11 @@ def npp_at(kom_projects):
 
     data_npp = sorted(data_npp.items(), key=lambda item: item[1], reverse=True)
 
+    data_npp.append([
+        "Итого:", 
+        sum([v[1] for v in data_npp])
+    ])
+    
     return data_npp
     
 def manuf_at(kom_projects):
@@ -135,8 +140,8 @@ def main_task():
 
     # Вставка в гугл таблицу
     insert_to_gs(URL, data_pr_type, "По типу", append=False)
-    insert_to_gs(URL, data_npp, "_По объектам поставки", append=False)
-    insert_to_gs(URL, data_manuf, "_По ЗИ", append=False)
+    insert_to_gs(URL, data_npp, "По объектам поставки", append=False)
+    insert_to_gs(URL, data_manuf, "По ЗИ", append=False)
     
 
 with DAG(
