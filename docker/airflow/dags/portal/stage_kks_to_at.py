@@ -7,10 +7,10 @@ from at_api import get_table
 
 
 with DAG(
-    dag_id="master_schedule",
+    dag_id="stage_kks_to_at",
     default_args={"owner": "Artem", "retries": 0},
     start_date=datetime.datetime(2025, 11, 27, 4, 0, 0, 0),
-    schedule_interval=None,
+    schedule_interval="0 0 * * *",
     catchup=False
 ) as dags:
     
