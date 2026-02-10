@@ -22,18 +22,31 @@ with DAG(
 
         records = hook.get_records(
             """
-            SELECT TO_CHAR(_created_at::DATE, 'YYYY-MM-DD'), _manuf, _sheet_name,
-                REPLACE(po_item, ',', '.') AS po_item,
-                UNNEST(string_to_array(kks, E'\n')) AS kks
-            FROM (
             SELECT
-                _created_at, _manuf, _sheet_name,
-                jsonb_array_elements(content) ->> 'po_item' as po_item,
-                jsonb_array_elements(content) ->> 'kks' as kks
-            from (SELECT *, max(_created_at) over(partition by _manuf, _sheet_name) max_created_at from stage.schedules_values) as t1
-            where _created_at = max_created_at
-                and _created_at > CURRENT_TIMESTAMP - interval '3 day'
-            ) as t1
+                _created_at,
+                _manuf,
+                _sheet_name,
+                po_item,
+                kks,
+                concat(_manuf, '_', _sheet_name, '_', po_item, '_', kks) as _unique_field
+            FROM (
+                SELECT
+                    TO_CHAR(_created_at::DATE, 'YYYY-MM-DD') as _created_at,
+                    _manuf,
+                    _sheet_name,
+                    REPLACE(po_item, ',', '.') AS po_item,
+                    UNNEST(string_to_array(kks, E'\n')) AS kks
+                FROM (
+                    SELECT
+                        _created_at, _manuf, _sheet_name,
+                        jsonb_array_elements(content) ->> 'po_item' as po_item,
+                        jsonb_array_elements(content) ->> 'kks' as kks
+                    from (SELECT *, max(_created_at) over(partition by _manuf, _sheet_name) max_created_at from stage.schedules_values) as t1
+                    where _created_at = max_created_at
+                    and _created_at > CURRENT_TIMESTAMP - interval '3 day'
+                ) AS t1
+                WHERE po_item ~ '^\d+\.\d+$'
+            ) AS t2
             """
         )
 
@@ -42,7 +55,7 @@ with DAG(
         
 
         payload = []
-        for created_at, manuf, sheet_name, po_item, kks in records:
+        for created_at, manuf, sheet_name, po_item, kks, unique_field in records:
             payload.append({
                 "fields": {
                     "_created_at": created_at,  # DATE
@@ -50,12 +63,13 @@ with DAG(
                     "_sheet_name": sheet_name,                    # single select
                     "po_item": po_item,                           # single select
                     "kks": kks,                                   # single line text
+                    "_unique_field": unique_field
                 }
             })
 
         res = at_table.batch_upsert(
             records=payload,
-            key_fields=["_sheet_name", "po_item", "kks"],
+            key_fields=["_unique_field"],
             typecast=True,
         )
         return res
