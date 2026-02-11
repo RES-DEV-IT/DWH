@@ -68,8 +68,8 @@ def main_task():
     for r in records:
         fields_from_pg = r[2].keys()
         fields_from_pg_normalized = [normalize_string(field) for field in fields_from_pg]
-        print(">>>", fields_from_pg)
-        print("@@@", fields_from_pg_normalized)
+        # print(">>>", fields_from_pg)
+        # print("@@@", fields_from_pg_normalized)
         unique_columns.update(fields_from_pg_normalized)
 
     # === Обновляем колонки в airtable ===
