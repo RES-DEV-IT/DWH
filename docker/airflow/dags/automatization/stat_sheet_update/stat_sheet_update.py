@@ -7,7 +7,7 @@ from airflow import DAG
 from airflow.providers.postgres.hooks.postgres import PostgresHook
 
 
-SERVICE_ACCOUNT_CREDS_PATH = "./plugins/schedules/download/submitted-tables-download-v02-750e825a7950.json"
+SERVICE_ACCOUNT_CREDS_PATH = "./plugins/schedules/download/excellent-ship-487111-n9-bdb8d109f4e5.json"
 CONFIG_PATH = './plugins/schedules/CONFIG.yaml'
 SHEET_UPDATE_QUERY = """
 SELECT
