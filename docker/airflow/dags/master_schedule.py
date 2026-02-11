@@ -60,11 +60,17 @@ def main_task():
             SELECT *, MAX(_created_at) OVER(PARTITION BY _manuf, _sheet_name) AS max_created_at
             FROM stage.schedules_values
         ) as t1
-        WHERE _created_at = max_created_at        
+        WHERE _created_at = max_created_at 
+        LIMIT 10      
     """)
 
     # === Получаем все возможные колонки ===
     unique_columns = set(["_manuf", "_sheet_name"])
+
+    for r in records:
+        for k in r[2].keys():
+            if k != "po_item":
+                r.pop(k, None)
     for r in records:
         fields_from_pg = r[2].keys()
         fields_from_pg_normalized = [normalize_string(field) for field in fields_from_pg]
@@ -80,7 +86,7 @@ def main_task():
     for unique_column in list(unique_columns):
         if unique_column not in existing_columns:
             # table.create_field(unique_column, field_type="singleLineText")
-            table.create_field(unique_column, field_type="longText")
+            table.create_field(unique_column, field_type="multilineText")
 
 
     # === Добавляем данные ===
