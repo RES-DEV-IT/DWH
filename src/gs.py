@@ -1,7 +1,7 @@
 from gspread import service_account
 
 
-SERVICE_ACCOUNT_CREDS_PATH = "./plugins/schedules/excellent-ship-487111-n9-bdb8d109f4e5.json"
+SERVICE_ACCOUNT_CREDS_PATH = "./plugins/schedules/download/excellent-ship-487111-n9-bdb8d109f4e5.json"
 
 
 def insert_to_gs(url, data_to_insert, sheet_name, append=True):
