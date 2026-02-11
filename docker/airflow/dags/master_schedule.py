@@ -68,7 +68,7 @@ def main_task():
     unique_columns = set(["_manuf", "_sheet_name"])
 
     for r in records:
-        for k in r[2].keys():
+        for k in list(r[2]):#.keys():
             if k != "po_item":
                 r[2].pop(k, None)
     for r in records:
