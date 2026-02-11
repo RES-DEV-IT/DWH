@@ -96,7 +96,7 @@ def main_task():
         try:
             table.batch_create([at_records], typecast=True)
         except Exception as e:
-            print("EEEEEEEEEEEE", e, r)
+            print("EEEEEEEEEEEE", e, r, type(r))
 
 with DAG(
     dag_id="master_schedule",
