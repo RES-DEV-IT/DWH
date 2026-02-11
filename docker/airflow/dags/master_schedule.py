@@ -83,7 +83,7 @@ def main_task():
 
 
     # === Добавляем данные ===
-    at_records = [r[2] for r in records] # extract content from each row
+    at_records = [r[2] for r in records[:20]] # extract content from each row
 
     for r in at_records:
         try:
