@@ -70,7 +70,7 @@ def main_task():
     for r in records:
         for k in r[2].keys():
             if k != "po_item":
-                r.pop(k, None)
+                r[2].pop(k, None)
     for r in records:
         fields_from_pg = r[2].keys()
         fields_from_pg_normalized = [normalize_string(field) for field in fields_from_pg]
