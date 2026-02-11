@@ -16,7 +16,7 @@ BASE_ID = "appOHnOuN3MFA7VM3"
 
 # GOOGLE
 SCOPES = ['https://www.googleapis.com/auth/gmail.send']
-CREDS_PATH = "/".join(__file__.replace("\\", "/").split("/")[:-1]) + "/client_secret_19656404523-idm8shvv74tdk0qmoo0k93de2t9vfqvj.apps.googleusercontent.com.json"
+CREDS_PATH = "/".join(__file__.replace("\\", "/").split("/")[:-1]) + "/client_secret_714699627138_d3qo96ukdstrnv73vlopn33k4rumhhod_apps.json"
 GOOGLE_TOKEN_FOR_MAILING = "/".join(__file__.replace("\\", "/").split("/")[:-1]) + '/google_token_for_mailing.json'
 
 # CONFIG

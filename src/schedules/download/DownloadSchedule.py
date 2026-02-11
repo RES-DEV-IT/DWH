@@ -7,7 +7,7 @@ import time
 
 
 PATH_TO_CONFIG = "/".join(__file__.replace("\\", "/").split("/")[:-2]) + "/CONFIG.yaml"
-SERVICE_ACCOUNT_CREDS_PATH = "/".join(__file__.replace("\\", "/").split("/")[:-1]) + "/submitted-tables-download-v02-750e825a7950.json"
+SERVICE_ACCOUNT_CREDS_PATH = "/".join(__file__.replace("\\", "/").split("/")[:-1]) + "/excellent-ship-487111-n9-bdb8d109f4e5.json"
 
 
 class DownloadSchedule:
