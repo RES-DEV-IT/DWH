@@ -79,7 +79,8 @@ def main_task():
     print(unique_columns)
     for unique_column in list(unique_columns):
         if unique_column not in existing_columns:
-            table.create_field(unique_column, field_type="singleLineText")
+            # table.create_field(unique_column, field_type="singleLineText")
+            table.create_field(unique_column, field_type="longText")
 
 
     # === Добавляем данные ===
@@ -87,7 +88,7 @@ def main_task():
 
     for r in at_records:
         try:
-            table.batch_create([{"fields": at_records}], typecast=True)
+            table.batch_create([at_records], typecast=True)
         except Exception as e:
             print("EEEEEEEEEEEE", e, r)
 
