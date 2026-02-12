@@ -71,10 +71,6 @@ def main_task():
         at_records.append(at_record)
 
     # === Добавляем данные ===
-
-    at_records = [r[2] for r in records] # extract content from each row
-    for r in at_records:
-        print("KKK", r.keys())
     table.batch_create(at_records, typecast=True)
     
     # for r in at_records:
