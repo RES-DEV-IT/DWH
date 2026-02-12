@@ -63,7 +63,7 @@ def main_task():
         if unique_column not in existing_columns:
             print("TRYING TO CREATE", unique_column)
             # table.create_field(unique_column, field_type="singleLineText")
-            table.create_field(unique_column, field_type="multilineText")
+            table_for_field_create.create_field(unique_column, field_type="multilineText")
 
 
     # === Добавляем данные ===
