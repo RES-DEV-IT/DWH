@@ -93,6 +93,8 @@ def main_task():
     # === Добавляем данные ===
     at_records = [r[2] for r in records[:20]] # extract content from each row
     table.batch_create(at_records, typecast=True)
+    for r in at_records:
+        print("KKK", r.keys())
     # for r in at_records:
     #     try:
     #         table.batch_create([r], typecast=True)
