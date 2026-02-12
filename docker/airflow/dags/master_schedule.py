@@ -35,7 +35,7 @@ def main_task():
             FROM stage.schedules_values
         ) as t1
         WHERE _created_at = max_created_at 
-          AND _created_at > CURRENT_TIMESTAMP - interval '3 day'
+          AND _created_at > CURRENT_TIMESTAMP - interval '1 day'
         LIMIT 10      
     """)
 
