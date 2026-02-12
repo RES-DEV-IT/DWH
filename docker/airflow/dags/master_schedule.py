@@ -86,6 +86,7 @@ def main_task():
     print("UNIQUE COLUMNS", unique_columns)
     for unique_column in list(unique_columns):
         if unique_column not in existing_columns:
+            print("TRYING TO CREATE", unique_column)
             # table.create_field(unique_column, field_type="singleLineText")
             table.create_field(unique_column, field_type="multilineText")
 
