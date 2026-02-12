@@ -94,7 +94,7 @@ def main_task():
 
     for r in at_records:
         try:
-            table.batch_create([at_records], typecast=True)
+            table.batch_create([r], typecast=True)
         except Exception as e:
             print("EEEEEEEEEEEE", e, r, type(r))
 
