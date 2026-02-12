@@ -64,10 +64,10 @@ def main_task():
     # === Преобразуем данные в формат AirTable ===
     at_records = []
     for record in records:
-        at_record = records[-1] # content
-        at_record["_created_at"] = records[0].copy()
-        at_record["_manuf"] = records[1]
-        at_record["_sheet_name"] = records[2]
+        at_record = record[-1] # content
+        at_record["_created_at"] = record[0].copy()
+        at_record["_manuf"] = record[1]
+        at_record["_sheet_name"] = record[2]
         at_records.append(at_record)
 
     # === Добавляем данные ===
