@@ -67,10 +67,10 @@ def main_task():
     # === Получаем все возможные колонки ===
     unique_columns = set(["_manuf", "_sheet_name"])
 
-    for r in records:
-        for k in list(r[2]):#.keys():
-            if k != "po_item":
-                r[2].pop(k, None)
+    # for r in records:
+    #     for k in list(r[2]):#.keys():
+    #         if k != "po_item":
+    #             r[2].pop(k, None)
     for r in records:
         fields_from_pg = r[2].keys()
         fields_from_pg_normalized = [normalize_string(field) for field in fields_from_pg]
@@ -91,12 +91,12 @@ def main_task():
 
     # === Добавляем данные ===
     at_records = [r[2] for r in records[:20]] # extract content from each row
-
-    for r in at_records:
-        try:
-            table.batch_create([r], typecast=True)
-        except Exception as e:
-            print("EEEEEEEEEEEE", e, r, type(r))
+    table.batch_create(at_records, typecast=True)
+    # for r in at_records:
+    #     try:
+    #         table.batch_create([r], typecast=True)
+    #     except Exception as e:
+    #         print("EEEEEEEEEEEE", e, r, type(r))
 
 with DAG(
     dag_id="master_schedule",
