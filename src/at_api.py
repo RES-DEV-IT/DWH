@@ -27,3 +27,13 @@ def get_table(
             return at_table
 
     raise ValueError(f"Can't find base with name: {base_name}")
+
+def get_table_for_field_create(token_name: str, base_name: str, table_name: str) -> Table:
+    api = Api(API_TOKENS[token_name])
+
+    # bases() в pyairtable возвращает Base-объекты (со schema-кешом и т.п.) :contentReference[oaicite:1]{index=1}
+    base = next(b for b in api.bases() if b.name == base_name)
+
+    # tables() возвращает Table-объекты с id='tbl...' и name='...' :contentReference[oaicite:2]{index=2}
+    table = next(t for t in base.tables() if t.name == table_name)
+    return table

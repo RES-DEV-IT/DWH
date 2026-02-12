@@ -4,6 +4,7 @@ import datetime
 from airflow.decorators import task
 from pyairtable import Table, Api
 import re
+from at_api import get_table, get_table_for_field_create
 
 
 def normalize_string(s: str) -> str:
@@ -18,33 +19,6 @@ def normalize_string(s: str) -> str:
 
     # 4) В нижний регистр
     return s.lower()
-
-# API TOKENS
-API_TOKENS = {
-    "Portal": "patpHD9iVIlsFGE2w.80f76907cb8bdc1dffd465c3eb3f275bc26a7e247727bdd5559b07decc0eb7d9"
-}
-
-def get_table(
-        token_name: str,
-        base_name: str,
-        table_name: str
-) -> Table:
-    """
-    Функция для получения AirTable таблицы по её base_name и имени
-    """
-
-    # AIRTABLE API
-    api_key = API_TOKENS[token_name]
-    api = Api(api_key)
-    available_bases = api.bases()
-
-    for available_base in available_bases:
-        if available_base.name == base_name:
-            at_table = api.table(available_base.id, table_name)
-
-            return at_table
-
-    raise ValueError(f"Can't find base with name: {base_name}")
 
 @task
 def main_task():
@@ -81,6 +55,7 @@ def main_task():
 
     # === Обновляем колонки в airtable ===
     table = get_table("Portal", "Portal 2.0: Schedules DLC", "MasterSchedule_new")
+    table_for_field_create = get_table_for_field_create("Portal", "Portal 2.0: Schedules DLC", "MasterSchedule_new")
     existing_columns = [field.name for field in table.schema().fields]
 
     print("UNIQUE COLUMNS", unique_columns)
