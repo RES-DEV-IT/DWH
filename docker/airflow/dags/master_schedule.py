@@ -27,7 +27,7 @@ def main_task():
     # === Получаем актуальные записи ===
     records = hook.get_records("""
         SELECT 
-            _created_at,
+            TO_CHAR(_created_at, 'YYYY-MM-DD'),
             _manuf,
             _sheet_name,
             jsonb_array_elements(content) as content
