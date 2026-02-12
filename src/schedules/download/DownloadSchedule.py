@@ -9,6 +9,18 @@ import time
 PATH_TO_CONFIG = "/".join(__file__.replace("\\", "/").split("/")[:-2]) + "/CONFIG.yaml"
 SERVICE_ACCOUNT_CREDS_PATH = "/".join(__file__.replace("\\", "/").split("/")[:-1]) + "/excellent-ship-487111-n9-bdb8d109f4e5.json"
 
+def normalize_string(s: str) -> str:
+    # 1) Оставляем только латиницу, цифры и пробелы
+    s = re.sub(r'[^A-Za-z0-9 _]+', '', s)
+
+    # 2) Сжимаем последовательности пробелов в один пробел
+    s = re.sub(r'\s+', ' ', s).strip()
+
+    # 3) Меняем пробелы на подчёркивания
+    s = s.replace(' ', '_')
+
+    # 4) В нижний регистр
+    return s.lower()
 
 class DownloadSchedule:
     def __init__(self):
@@ -145,8 +157,10 @@ class DownloadSchedule:
                 bgs = np.delete(bgs, ignore_col_idxs, axis=1)
                 pg_columns_names = []
                 for column_name in columns:
-                    column_name = column_name.lower().replace("/", "").replace(".", "")
-                    column_name = '_'.join(column_name.split())
+                    column_name = normalize_string(column_name)
+                    # column_name = column_name.lower().replace("/", "").replace(".", "")
+                    # column_name = '_'.join(column_name.split())
+
                     pg_columns_names.append(column_name)
                 result[sheet_name] = {
                     "values": values,
