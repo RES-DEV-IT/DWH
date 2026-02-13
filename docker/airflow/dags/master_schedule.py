@@ -30,14 +30,14 @@ def main_task():
             _created_at,
             _manuf,
             _sheet_name,
-            array_agg(concat(_manuf, '_', _sheet_name, '_', '_', kks)) as kks_new_link,
+            array_agg(concat(_manuf, '_', _sheet_name, '_', po_item, '_', kks)) as kks_new_link,
             content
         FROM (              
             SELECT 
                 _created_at,
                 _manuf,
                 _sheet_name,
-                REPLACE(po_item, ',', '.'),
+                REPLACE(po_item, ',', '.') as po_item,
                 unnest(string_to_array(kks, E'\n')) as kks,
                 content
             FROM (
