@@ -30,6 +30,7 @@ def main_task():
             _created_at,
             _manuf,
             _sheet_name,
+            CONCAT(_manuf, '_', _sheet_name) as _sheet_name_manuf,
             array_agg(concat(_manuf, '_', _sheet_name, '_', po_item, '_', kks)) as kks_new_link,
             string_agg(concat(_manuf, '_', _sheet_name, '_', po_item, '_', kks), ', ') as _unique_field,
             content
@@ -58,11 +59,11 @@ def main_task():
                 --LIMIT 10
             ) AS t1
         ) AS t2
-        group by _created_at, _manuf, _sheet_name, content
+        group by _created_at, _manuf, _sheet_name, CONCAT(_manuf, '_', _sheet_name), content
     """)
 
     # === Получаем все возможные колонки ===
-    unique_columns = set(["_created_at", "_manuf", "_sheet_name", "kks_new_link", "_unique_field"])
+    unique_columns = set(["_created_at", "_manuf", "_sheet_name", "kks_new_link", "_unique_field", "_sheet_name_manuf"])
 
     
     for r in records:
@@ -89,8 +90,9 @@ def main_task():
         at_record["_created_at"] = record[0]
         at_record["_manuf"] = record[1]
         at_record["_sheet_name"] = record[2]
-        at_record["kks_new_link"] = record[3]
-        at_record["_unique_field"] = record[4]
+        at_record["_sheet_name_manuf"] = record[3]
+        at_record["kks_new_link"] = record[4]
+        at_record["_unique_field"] = record[5]
         at_records.append(at_record)
 
     at_records_for_upsert = [{"fields": r} for r in at_records]
