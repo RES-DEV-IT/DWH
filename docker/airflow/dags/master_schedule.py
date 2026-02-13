@@ -93,9 +93,14 @@ def main_task():
         at_record["_unique_field"] = record[4]
         at_records.append(at_record)
 
+    at_records_for_upsert = [{"fields": r} for r in at_records]
     # === Добавляем данные ===
     # table.batch_create(at_records, typecast=True)
-    table.batch_upsert([{"fields": r} for r in at_records], key_fields=["_unique_field"], typecast=True)
+    for r in at_records_for_upsert:
+        try:
+            table.batch_upsert([r], key_fields=["_unique_field"], typecast=True)
+        except Exception as e:
+            print("EEEEEEEEEEEE", e, r, type(r))
     
     # for r in at_records:
     #     try:
