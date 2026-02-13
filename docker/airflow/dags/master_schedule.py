@@ -90,7 +90,7 @@ def main_task():
         at_record["_manuf"] = record[1]
         at_record["_sheet_name"] = record[2]
         at_record["kks_new_link"] = record[3]
-        at_record["_unique_field"] = record[3]
+        at_record["_unique_field"] = record[4]
         at_records.append(at_record)
 
     # === Добавляем данные ===
