@@ -30,7 +30,7 @@ def main_task():
             _created_at,
             _manuf,
             _sheet_name,
-            CONCAT(_manuf, '_', _sheet_name) as _sheet_name_manuf,
+            CONCAT(_manuf, '_', _sheet_name) as _manuf_sheet_name,
             array_agg(concat(_manuf, '_', _sheet_name, '_', po_item, '_', kks)) as kks_new_link,
             string_agg(concat(_manuf, '_', _sheet_name, '_', po_item, '_', kks), ', ') as _unique_field,
             content
@@ -63,7 +63,7 @@ def main_task():
     """)
 
     # === Получаем все возможные колонки ===
-    unique_columns = set(["_created_at", "_manuf", "_sheet_name", "kks_new_link", "_unique_field", "_sheet_name_manuf"])
+    unique_columns = set(["_created_at", "_manuf", "_sheet_name", "kks_new_link", "_unique_field", "_manuf_sheet_name"])
 
     
     for r in records:
@@ -90,7 +90,7 @@ def main_task():
         at_record["_created_at"] = record[0]
         at_record["_manuf"] = record[1]
         at_record["_sheet_name"] = record[2]
-        at_record["_sheet_name_manuf"] = record[3]
+        at_record["_manuf_sheet_name"] = record[3]
         at_record["kks_new_link"] = record[4]
         at_record["_unique_field"] = record[5]
         at_records.append(at_record)
