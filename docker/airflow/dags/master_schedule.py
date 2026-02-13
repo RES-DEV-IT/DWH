@@ -93,7 +93,7 @@ def main_task():
 
     # === Добавляем данные ===
     # table.batch_create(at_records, typecast=True)
-    table.batch_upsert(at_records, key_fields=["kks_new_link"], typecast=True)
+    table.batch_upsert([{"fields": r} for r in at_records], key_fields=["kks_new_link"], typecast=True)
     
     # for r in at_records:
     #     try:
