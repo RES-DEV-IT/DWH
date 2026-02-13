@@ -26,22 +26,44 @@ def main_task():
 
     # === Получаем актуальные записи ===
     records = hook.get_records("""
+        concat(_manuf, '_', _sheet_name, '_', po_item, '_', kks) as _unique_field
+
         SELECT 
-            TO_CHAR(_created_at, 'YYYY-MM-DD'),
+            _created_at,
             _manuf,
             _sheet_name,
-            jsonb_array_elements(content) as content
-        FROM (
-            SELECT *, MAX(_created_at) OVER(PARTITION BY _manuf, _sheet_name) AS max_created_at
-            FROM stage.schedules_values
-        ) as t1
-        WHERE _created_at = max_created_at 
-          AND _created_at > CURRENT_TIMESTAMP - interval '1 day'
-        LIMIT 10   
+            array_agg(concat(_manuf, '_', _sheet_name, '_', po_item, '_', kks)) as kks_new_link,
+            content
+        FROM (              
+            SELECT 
+                _created_at,
+                _manuf,
+                _sheet_name,
+                po_item,
+                unnest(string_to_array(kks, E'\n')) as kks,
+                content
+            FROM (
+                SELECT 
+                    TO_CHAR(_created_at, 'YYYY-MM-DD') as _created_at,
+                    _manuf,
+                    _sheet_name,
+                    jsonb_array_elements(content) ->> 'po_item' as po_item,
+                    jsonb_array_elements(content) ->> 'kks' as kks,
+                    jsonb_array_elements(content) as content
+                FROM (
+                    SELECT *, MAX(_created_at) OVER(PARTITION BY _manuf, _sheet_name) AS max_created_at
+                    FROM stage.schedules_values
+                ) as t1
+                WHERE _created_at = max_created_at 
+                AND _created_at > CURRENT_TIMESTAMP - interval '1 day'
+                LIMIT 10
+            ) AS t1
+        ) AS t2
+        group by 1, 2, 3, 5
     """)
 
     # === Получаем все возможные колонки ===
-    unique_columns = set(["_created_at", "_manuf", "_sheet_name"])
+    unique_columns = set(["_created_at", "_manuf", "_sheet_name", "kks_new_link"])
 
     
     for r in records:
