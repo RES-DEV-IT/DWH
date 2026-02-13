@@ -10,7 +10,7 @@ PATH_TO_CONFIG = "/".join(__file__.replace("\\", "/").split("/")[:-2]) + "/CONFI
 SERVICE_ACCOUNT_CREDS_PATH = "/".join(__file__.replace("\\", "/").split("/")[:-1]) + "/excellent-ship-487111-n9-bdb8d109f4e5.json"
 
 def normalize_string(s: str) -> str:
-    s = s.replace("\n", "_")
+    s = s.replace("\n", " ")
     # 1) Оставляем только латиницу, цифры и пробелы
     s = re.sub(r'[^A-Za-z0-9 _]+', '', s)
 
