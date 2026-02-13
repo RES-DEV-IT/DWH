@@ -86,10 +86,10 @@ def main_task():
             table_for_field_create.create_field(unique_column, field_type="multilineText")
 
     # === Работаем с таблицей Projects ===
-    projects = table_projects.all(fields=["Name", "_manuf_sheet_names"])
+    projects = table_projects.all(fields=["Name", "_manuf_sheet_name"])
     matching = {}
     for project in projects:
-        _manuf_sheet_names = projects["fields"].get("_manuf_sheet_names")
+        _manuf_sheet_names = projects["fields"].get("_manuf_sheet_name")
         if _manuf_sheet_names is not None:
             matching[_manuf_sheet_names] = projects["fields"].get("Name")
     print(">>> MATCHING", matching)
