@@ -26,8 +26,6 @@ def main_task():
 
     # === Получаем актуальные записи ===
     records = hook.get_records("""
-        concat(_manuf, '_', _sheet_name, '_', po_item, '_', kks) as _unique_field
-
         SELECT 
             _created_at,
             _manuf,
@@ -90,6 +88,7 @@ def main_task():
         at_record["_created_at"] = record[0]
         at_record["_manuf"] = record[1]
         at_record["_sheet_name"] = record[2]
+        at_record["kks_new_link"] = record[3]
         at_records.append(at_record)
 
     # === Добавляем данные ===
