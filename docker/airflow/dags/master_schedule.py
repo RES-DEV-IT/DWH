@@ -89,9 +89,9 @@ def main_task():
     projects = table_projects.all(fields=["Name", "_manuf_sheet_name"])
     matching = {}
     for project in projects:
-        _manuf_sheet_names = projects["fields"].get("_manuf_sheet_name")
+        _manuf_sheet_names = project["fields"].get("_manuf_sheet_name")
         if _manuf_sheet_names is not None:
-            matching[_manuf_sheet_names] = projects["fields"].get("Name")
+            matching[_manuf_sheet_names] = project["fields"].get("Name")
     print(">>> MATCHING", matching)
 
     # === Преобразуем данные в формат AirTable ===
