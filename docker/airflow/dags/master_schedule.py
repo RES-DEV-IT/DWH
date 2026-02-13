@@ -58,7 +58,7 @@ def main_task():
                 LIMIT 10
             ) AS t1
         ) AS t2
-        group by 1, 2, 3, 5
+        group by _created_at, _manuf, _sheet_name, content
     """)
 
     # === Получаем все возможные колонки ===
