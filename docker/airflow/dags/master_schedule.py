@@ -74,6 +74,8 @@ def main_task():
     # === Обновляем колонки в airtable ===
     table = get_table("Portal", "Portal 2.0: Schedules DLC", "MasterSchedule_new")
     table_for_field_create = get_table_for_field_create("Portal", "Portal 2.0: Schedules DLC", "MasterSchedule_new")
+    table_projects = get_table_for_field_create("Portal", "Portal 2.0: Schedules DLC", "Projects_new")
+    
     existing_columns = [field.name for field in table.schema().fields]
 
     print("UNIQUE COLUMNS", unique_columns)
@@ -82,6 +84,15 @@ def main_task():
             print("TRYING TO CREATE", unique_column)
             # table.create_field(unique_column, field_type="singleLineText")
             table_for_field_create.create_field(unique_column, field_type="multilineText")
+
+    # === Работаем с таблицей Projects ===
+    projects = table_projects.all(fields=["Name", "_manuf_sheet_names"])
+    matching = {}
+    for project in projects:
+        _manuf_sheet_names = projects["fields"].get("_manuf_sheet_names")
+        if _manuf_sheet_names is not None:
+            matching[_manuf_sheet_names] = projects["fields"].get("Name")
+    print(">>> MATCHING", matching)
 
     # === Преобразуем данные в формат AirTable ===
     at_records = []
@@ -93,6 +104,9 @@ def main_task():
         at_record["_manuf_sheet_name"] = record[3]
         at_record["kks_new_link"] = record[4]
         at_record["_unique_field"] = record[5]
+
+        if at_record["_manuf_sheet_name"] in matching:
+            at_record["projects_new_link"] = matching[at_record["_manuf_sheet_name"]]
         at_records.append(at_record)
 
     at_records_for_upsert = [{"fields": r} for r in at_records]
