@@ -31,6 +31,7 @@ def main_task():
             _manuf,
             _sheet_name,
             array_agg(concat(_manuf, '_', _sheet_name, '_', po_item, '_', kks)) as kks_new_link,
+            string_gg(concat(_manuf, '_', _sheet_name, '_', po_item, '_', kks), ', ') as _unique_field,
             content
         FROM (              
             SELECT 
@@ -61,7 +62,7 @@ def main_task():
     """)
 
     # === Получаем все возможные колонки ===
-    unique_columns = set(["_created_at", "_manuf", "_sheet_name", "kks_new_link"])
+    unique_columns = set(["_created_at", "_manuf", "_sheet_name", "kks_new_link", "_unique_field"])
 
     
     for r in records:
@@ -89,11 +90,12 @@ def main_task():
         at_record["_manuf"] = record[1]
         at_record["_sheet_name"] = record[2]
         at_record["kks_new_link"] = record[3]
+        at_record["_unique_field"] = record[3]
         at_records.append(at_record)
 
     # === Добавляем данные ===
     # table.batch_create(at_records, typecast=True)
-    table.batch_upsert([{"fields": r} for r in at_records], key_fields=["kks_new_link"], typecast=True)
+    table.batch_upsert([{"fields": r} for r in at_records], key_fields=["_unique_field"], typecast=True)
     
     # for r in at_records:
     #     try:
