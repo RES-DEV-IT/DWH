@@ -45,7 +45,7 @@ with DAG(
                     where _created_at = max_created_at
                     and _created_at > CURRENT_TIMESTAMP - interval '3 day'
                 ) AS t1
-                WHERE po_item ~ '^\d+\.\d+$'
+                -- WHERE po_item ~ '^\d+\.\d+$'
             ) AS t2
             """
         )
