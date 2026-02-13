@@ -55,7 +55,7 @@ def main_task():
                 ) as t1
                 WHERE _created_at = max_created_at 
                 AND _created_at > CURRENT_TIMESTAMP - interval '1 day'
-                LIMIT 10
+                --LIMIT 10
             ) AS t1
         ) AS t2
         group by _created_at, _manuf, _sheet_name, content
