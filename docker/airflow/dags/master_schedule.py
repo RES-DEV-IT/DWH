@@ -31,7 +31,7 @@ def main_task():
             _manuf,
             _sheet_name,
             array_agg(concat(_manuf, '_', _sheet_name, '_', po_item, '_', kks)) as kks_new_link,
-            string_gg(concat(_manuf, '_', _sheet_name, '_', po_item, '_', kks), ', ') as _unique_field,
+            string_agg(concat(_manuf, '_', _sheet_name, '_', po_item, '_', kks), ', ') as _unique_field,
             content
         FROM (              
             SELECT 
