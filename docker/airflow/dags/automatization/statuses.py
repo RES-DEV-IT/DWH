@@ -208,7 +208,7 @@ def main():
     conn.close()
 
 default_args = {
-    "owner": "Artem",
+    "owner": "DEV",
     "retries": 0
 }
 
@@ -220,3 +220,4 @@ with DAG(
     catchup=False
 ) as dags:
     main()
+    

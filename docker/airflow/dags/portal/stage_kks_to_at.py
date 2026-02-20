@@ -8,7 +8,7 @@ from at_api import get_table
 
 with DAG(
     dag_id="stage_kks_to_at",
-    default_args={"owner": "Artem", "retries": 0},
+    default_args={"owner": "DEV", "retries": 0},
     start_date=datetime.datetime(2025, 11, 27, 4, 0, 0, 0),
     schedule_interval="0 0 * * *",
     catchup=False
@@ -75,3 +75,5 @@ with DAG(
         return res
     
     main_task()
+
+    

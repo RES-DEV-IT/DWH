@@ -197,7 +197,7 @@ def main_task():
     service = create_service()
     send_email_with_html_and_excel(
         service=service,
-        to_email=["letyagin.a@res-e.ru"],
+        to_email=["zavodovskaya@res-e.ru"],
         subject="Метрики для ICP",
         dfs=dfs,
         excel_filename="metrics.xlsx"
@@ -206,7 +206,7 @@ CRON_EXP = None
 START_DATE = datetime(2025, 11, 27, 4, 0, 0, 0)
 
 default_args = {
-    "owner": "Artem",
+    "owner": "DEV",
     "retries": 0
 }
 
@@ -218,4 +218,5 @@ with DAG(
     catchup=False
 ) as dags:
     
-    main_task()
+    main_task(
+    )

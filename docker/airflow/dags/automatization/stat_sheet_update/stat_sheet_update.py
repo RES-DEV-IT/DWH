@@ -77,7 +77,7 @@ CRON_EXP = "0 7-16/2 * * mon-fri"
 START_DATE = datetime(2025, 11, 27, 4, 0, 0, 0)
 
 default_args = {
-    "owner": "Artem",
+    "owner": "DEV",
     "retries": 0
 }
 
@@ -91,28 +91,3 @@ with DAG(
     
     main_task()
     
-# if __name__ == "__main__":
-
-#     # === Подключаемся к гугл аккаунту ===
-#     client = service_account("/Users/artem/Desktop/Artem/Work/RES/DWH/src/schedules/download/submitted-tables-download-v02-750e825a7950.json")
-
-#     # === Читаем конфиг с ссылками на schedules ===
-#     with open("/Users/artem/Desktop/Artem/Work/RES/DWH/src/schedules/CONFIG.yaml") as file:
-#         urls = yaml.safe_load(file)["URLS"]
-
-#     stat_sheet = client.open_by_url(urls["RKC"]).worksheet("Stat")
-
-#     data_to_insert = [["1", "123"], ["2", "t4wt2e"]]
-    
-#     row_start = 2
-#     col_start = 1
-
-#     stat_sheet.batch_clear([
-#         f"R{row_start}C{col_start}:R{row_start + len(data_to_insert) - 1}C{col_start + len(data_to_insert[0]) - 1}"
-#     ])
-
-#     stat_sheet.update(
-#         f"R{row_start}C{col_start}:R{row_start + len(data_to_insert) - 1}C{col_start + len(data_to_insert[0]) - 1}",
-#         data_to_insert,
-#         raw=False
-#     )

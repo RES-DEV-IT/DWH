@@ -11,9 +11,10 @@ DBT_MODEL_NAME_VALUES = "int_schedules_values"
 DBT_MODEL_NAME_COLORS = "int_schedules_colors"
 
 default_args = {
-    "owner": "Artem",
+    "owner": "DEV",
     "retries": 0
 }
+
 
 with DAG(
     dag_id="intermidiate_schedules",

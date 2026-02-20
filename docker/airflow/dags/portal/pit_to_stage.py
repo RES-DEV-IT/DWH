@@ -13,6 +13,7 @@ API_TOKENS = {
     "Portal": "patpHD9iVIlsFGE2w.80f76907cb8bdc1dffd465c3eb3f275bc26a7e247727bdd5559b07decc0eb7d9"
 }
 
+
 def get_table(
         token_name: str,
         base_name: str,
@@ -81,7 +82,7 @@ def fetch_table():
     conn.close()
 
 default_args = {
-    "owner": "Artem",
+    "owner": "DEV",
     "retries": 0
 }
 

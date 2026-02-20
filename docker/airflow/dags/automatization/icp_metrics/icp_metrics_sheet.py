@@ -39,7 +39,7 @@ def main_task():
 
 with DAG(
     dag_id="icp_metrics_sheet",
-    default_args={"owner": "Artem", "retries": 0},
+    default_args={"owner": "DEV", "retries": 0},
     start_date=datetime(2025, 11, 27, 4, 0, 0, 0),
     schedule_interval="30 6-15/2 * * mon-fri",
     catchup=False

@@ -95,7 +95,7 @@ CRON_EXP = "0 0 * * *" # Запуск каждый день
 START_DATE = datetime(2025, 11, 27, 4, 0, 0, 0)
 
 default_args = {
-    "owner": "Artem",
+    "owner": "DEV",
     "retries": 0
 }
 
@@ -108,3 +108,4 @@ with DAG(
 ) as dags:
     
     main_task()
+    

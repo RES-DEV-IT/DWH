@@ -20,6 +20,7 @@ def normalize_string(s: str) -> str:
     # 4) В нижний регистр
     return s.lower()
 
+
 @task
 def main_task():
     hook = PostgresHook(postgres_conn_id="resdb_connection")
@@ -126,7 +127,7 @@ def main_task():
 
 with DAG(
     dag_id="master_schedule",
-    default_args={"owner": "Artem", "retries": 0},
+    default_args={"owner": "DEV", "retries": 0},
     start_date=datetime.datetime(2025, 11, 27, 4, 0, 0, 0),
     schedule_interval=None,
     catchup=False

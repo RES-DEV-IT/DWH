@@ -250,7 +250,7 @@ def update_airtable(info):
 with DAG(
     dag_id=f'autosave_dag',
     default_args={
-        "owner": "Artem",
+        "owner": "DEV",
         "retries": 0,
         "retry_delay": timedelta(minutes=5)
     },
@@ -267,3 +267,4 @@ with DAG(
     )
 
     auto_save_output >> copy_task >> update_task
+    
