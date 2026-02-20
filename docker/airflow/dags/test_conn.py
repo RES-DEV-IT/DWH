@@ -14,7 +14,7 @@ CRON_EXP = None
 START_DATE = datetime(2025, 11, 27, 4, 0, 0, 0)
 
 default_args = {
-    "owner": "Artem",
+    "owner": "DEV",
     "retries": 0
 }
 
@@ -31,3 +31,4 @@ with DAG(
     catchup=False
 ) as dags:
     check_conn_task()
+    
