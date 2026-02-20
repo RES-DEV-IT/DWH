@@ -9,7 +9,6 @@ from openpyxl import load_workbook
 import pandas as pd
 import shutil
 
-
 MANUF_NAME = "HawaTubes"
 CRON_EXP = "9 6-15/2 * * mon-fri"
 START_DATE = datetime(2025, 11, 27, 4, 0, 0, 0)
@@ -78,7 +77,6 @@ def download_and_insert():
     conn.commit()
     cursor.close()
     conn.close()
-
 
 with DAG(
     dag_id=f"stage_{MANUF_NAME.lower()}",
