@@ -4,7 +4,7 @@ from airflow import DAG
 from pyairtable import Table, Api
 from gspread import service_account
 
-SERVICE_ACCOUNT_CREDS_PATH = "./plugins/schedules/download/submitted-tables-download-v02-750e825a7950.json"
+SERVICE_ACCOUNT_CREDS_PATH = "./plugins/schedules/download/excellent-ship-487111-n9-b20891397bd5.json"
 LEADS_URL = "https://docs.google.com/spreadsheets/d/1wbIJEoLoMxag7TBThrn6sPGPgg_t7-qbeauv2SdXoxU"
 # LEADS_URL = "https://docs.google.com/spreadsheets/d/1GLj02RRCUvtD7yR_Al5_PSCdDapjOZaw8AFjZEf_Z1g" # COPY
 # API TOKENS
