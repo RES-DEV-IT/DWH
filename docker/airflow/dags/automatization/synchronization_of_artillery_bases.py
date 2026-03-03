@@ -8,7 +8,7 @@ from gspread import service_account
 
 SERVICE_ACCOUNT_CREDS_PATH = "./plugins/schedules/download/excellent-ship-487111-n9-b20891397bd5.json"
 a = ".././"
-PROJECTS_URL = "https://docs.google.com/spreadsheets/d/1cBo4dY58Eic0EZwz5jhXR893nP-NfuKSd-0TEm9Zgsw/edit"
+PROJECTS_URL = "https://docs.google.com/spreadsheets/d/1cBo4dY58Eic0EZwz5jhXR893nP-NfuKSd-0TEm9Zgsw"
 
 API_TOKENS = {
     "Portal": "patpHD9iVIlsFGE2w.80f76907cb8bdc1dffd465c3eb3f275bc26a7e247727bdd5559b07decc0eb7d9"  # Замени на свой токен
@@ -224,3 +224,4 @@ with DAG(
     
 
     main_task()
+
