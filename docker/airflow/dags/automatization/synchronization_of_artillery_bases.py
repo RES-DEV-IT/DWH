@@ -6,7 +6,7 @@ from gspread import service_account
 
 # ============ КОНФИГУРАЦИЯ ============
 
-SERVICE_ACCOUNT_CREDS_PATH = "./plugins/schedules/download/submitted-tables-download-v02-750e825a7950.json"
+SERVICE_ACCOUNT_CREDS_PATH = "./plugins/schedules/download/excellent-ship-487111-n9-b20891397bd5.json"
 a = ".././"
 PROJECTS_URL = "https://docs.google.com/spreadsheets/d/1cBo4dY58Eic0EZwz5jhXR893nP-NfuKSd-0TEm9Zgsw/edit"
 
@@ -222,4 +222,5 @@ with DAG(
     catchup=False
 ) as dag:
     
+
     main_task()
